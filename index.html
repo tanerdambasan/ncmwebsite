@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NCMSoft — Akıllı Lojistik Yönetim Platformu</title>
+  <meta name="description" content="NCMSoft; sipariş takibi, filo yönetimi, gerçek zamanlı GPS izleme ve WhatsApp entegrasyonu ile lojistik operasyonlarınızı dijitalleştirir." />
+  <meta name="keywords" content="lojistik yazılımı, filo yönetimi, sipariş takibi, GPS izleme, tedarik zinciri, lojistik platform, NCMSoft" />
+  <meta property="og:title" content="NCMSoft — Akıllı Lojistik Yönetim Platformu" />
+  <meta property="og:description" content="Sipariş, filo, finans ve sürücü yönetimini tek platformda birleştiren kurumsal lojistik yazılımı." />
+  <meta property="og:type" content="website" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary:#2563eb; --primary-dark:#1d4ed8; --primary-light:#3b82f6;
+      --accent:#06b6d4; --accent2:#8b5cf6;
+      --dark:#0a0f1e; --dark2:#0f172a; --dark3:#1e293b;
+      --surface:#1e293b; --surface2:#273448;
+      --border:rgba(255,255,255,0.08);
+      --text:#f1f5f9; --text-muted:#94a3b8; --text-dim:#64748b;
+      --green:#10b981; --orange:#f59e0b;
+      --radius:12px; --radius-lg:20px;
+    }
+    html { scroll-behavior:smooth; }
+    body { font-family:'Inter',sans-serif; background:var(--dark); color:var(--text); line-height:1.6; overflow-x:hidden; }
+    ::-webkit-scrollbar{width:6px} ::-webkit-scrollbar-track{background:var(--dark2)} ::-webkit-scrollbar-thumb{background:var(--primary);border-radius:3px}
+    .container{max-width:1200px;margin:0 auto;padding:0 24px}
+    .gradient-text{background:linear-gradient(135deg,#60a5fa,#a78bfa,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(37,99,235,.15);border:1px solid rgba(37,99,235,.3);color:#93c5fd;padding:4px 14px;border-radius:999px;font-size:12px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+    .btn-primary{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--primary),var(--accent2));color:#fff;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;text-decoration:none;transition:all .25s;border:none;cursor:pointer;box-shadow:0 4px 20px rgba(37,99,235,.4)}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(37,99,235,.5)}
+    .btn-secondary{display:inline-flex;align-items:center;gap:8px;background:transparent;border:1px solid var(--border);color:var(--text);padding:14px 28px;border-radius:10px;font-weight:500;font-size:15px;text-decoration:none;transition:all .25s;cursor:pointer}
+    .btn-secondary:hover{border-color:var(--primary-light);color:#93c5fd;background:rgba(37,99,235,.08)}
+    .blob{position:absolute;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0}
+    .blob-blue{background:rgba(37,99,235,.25)} .blob-purple{background:rgba(139,92,246,.2)} .blob-cyan{background:rgba(6,182,212,.15)}
+
+    /* NAV */
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,15,30,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transition:all .3s}
+    .nav-inner{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;max-width:1200px;margin:0 auto}
+    .logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+    .logo-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--primary),var(--accent2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;color:#fff}
+    .logo-text{font-size:20px;font-weight:800;color:var(--text)}
+    .logo-text span{color:var(--primary-light)}
+    .nav-links{display:flex;align-items:center;gap:32px;list-style:none}
+    .nav-links a{color:var(--text-muted);text-decoration:none;font-size:14px;font-weight:500;transition:color .2s}
+    .nav-links a:hover{color:var(--text)}
+    .nav-cta{display:flex;align-items:center;gap:12px}
+    .nav-demo{background:linear-gradient(135deg,var(--primary),var(--accent2));color:#fff;padding:9px 20px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;transition:all .2s;box-shadow:0 2px 12px rgba(37,99,235,.3);border:none;cursor:pointer}
+    .nav-demo:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(37,99,235,.5)}
+    .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;background:none;border:none}
+    .hamburger span{width:24px;height:2px;background:var(--text);border-radius:2px;display:block;transition:.3s}
+    @media(max-width:768px){.nav-links,.nav-cta .btn-secondary{display:none}.hamburger{display:flex}}
+
+    /* HERO */
+    #hero{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden;padding:120px 0 80px}
+    .hero-content{position:relative;z-index:1;max-width:720px}
+    .hero-badge{margin-bottom:20px}
+    .hero-title{font-size:clamp(38px,6vw,68px);font-weight:900;line-height:1.1;margin-bottom:24px;letter-spacing:-1.5px}
+    .hero-subtitle{font-size:18px;color:var(--text-muted);max-width:560px;line-height:1.7;margin-bottom:40px}
+    .hero-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+    .hero-stats{display:flex;gap:40px;margin-top:60px;flex-wrap:wrap}
+    .hero-stat-num{font-size:32px;font-weight:800;color:var(--text)}
+    .hero-stat-label{font-size:13px;color:var(--text-muted);margin-top:2px}
+    .hero-visual{position:absolute;right:-40px;top:50%;transform:translateY(-50%);width:520px;z-index:1}
+    @media(max-width:1024px){.hero-visual{display:none}}
+    .dashboard-mockup{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,.5)}
+    .mockup-bar{background:var(--dark2);padding:12px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
+    .dot{width:10px;height:10px;border-radius:50%}
+    .mockup-body{padding:20px}
+    .mockup-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+    .kpi-card{background:var(--dark2);border-radius:10px;padding:14px;border:1px solid var(--border)}
+    .kpi-label{font-size:11px;color:var(--text-dim);margin-bottom:4px}
+    .kpi-value{font-size:20px;font-weight:700}
+    .kpi-trend{font-size:11px;margin-top:2px}
+    .trend-up{color:var(--green)} .trend-dn{color:var(--orange)}
+    .mockup-map{background:linear-gradient(135deg,#0f2744,#1a3a5c);border-radius:10px;height:140px;position:relative;overflow:hidden;border:1px solid var(--border)}
+    .map-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(37,99,235,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(37,99,235,.08) 1px,transparent 1px);background-size:30px 30px}
+    .map-dot{position:absolute;width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(16,185,129,.25);animation:pulse 2s infinite}
+    .map-dot:nth-child(2){background:var(--primary-light);box-shadow:0 0 0 4px rgba(59,130,246,.25);top:40%;left:60%;animation-delay:.7s}
+    .map-dot:nth-child(3){background:var(--orange);box-shadow:0 0 0 4px rgba(245,158,11,.25);top:60%;left:30%;animation-delay:1.4s}
+    @keyframes pulse{0%,100%{box-shadow:0 0 0 4px rgba(16,185,129,.25)}50%{box-shadow:0 0 0 10px rgba(16,185,129,0)}}
+    .map-label{position:absolute;top:10px;left:10px;background:rgba(0,0,0,.7);padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;color:var(--green)}
+    .mockup-table{margin-top:12px}
+    .table-header{display:grid;grid-template-columns:2fr 1fr 1fr;font-size:11px;color:var(--text-dim);padding:0 0 6px;border-bottom:1px solid var(--border)}
+    .table-row{display:grid;grid-template-columns:2fr 1fr 1fr;font-size:12px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);align-items:center}
+    .status-pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600}
+    .s-transit{background:rgba(37,99,235,.15);color:#93c5fd}
+    .s-delivered{background:rgba(16,185,129,.15);color:#6ee7b7}
+    .s-pending{background:rgba(245,158,11,.15);color:#fcd34d}
+
+    /* SECTIONS */
+    section{padding:100px 0}
+    .section-header{text-align:center;margin-bottom:64px}
+    .section-title{font-size:clamp(28px,4vw,44px);font-weight:800;margin:12px 0 16px;letter-spacing:-1px}
+    .section-subtitle{font-size:17px;color:var(--text-muted);max-width:560px;margin:0 auto}
+
+    /* FEATURES */
+    .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px}
+    .feature-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:32px;transition:all .3s;position:relative;overflow:hidden}
+    .feature-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--primary),var(--accent2));opacity:0;transition:opacity .3s}
+    .feature-card:hover{border-color:rgba(37,99,235,.3);transform:translateY(-4px)}
+    .feature-card:hover::before{opacity:1}
+    .feature-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:20px}
+    .feature-title{font-size:18px;font-weight:700;margin-bottom:10px}
+    .feature-desc{color:var(--text-muted);font-size:14px;line-height:1.7;margin-bottom:20px}
+    .feature-tags{display:flex;gap:8px;flex-wrap:wrap}
+    .tag{font-size:11px;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--text-muted)}
+
+    /* HOW */
+    #how{background:var(--dark2)}
+    .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0;position:relative}
+    .steps::before{content:'';position:absolute;top:32px;left:10%;right:10%;height:2px;background:linear-gradient(90deg,var(--primary),var(--accent2));opacity:.3}
+    @media(max-width:768px){.steps::before{display:none}.steps{gap:24px}}
+    .step{text-align:center;padding:0 24px;position:relative}
+    .step-num{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;margin:0 auto 20px;box-shadow:0 0 0 8px rgba(37,99,235,.1)}
+    .step-title{font-size:16px;font-weight:700;margin-bottom:10px}
+    .step-desc{font-size:14px;color:var(--text-muted);line-height:1.6}
+
+    /* MODULES */
+    .modules-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+    .module-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px 20px;text-align:center;transition:all .25s}
+    .module-card:hover{border-color:var(--primary-light);transform:translateY(-3px)}
+    .module-emoji{font-size:32px;margin-bottom:12px}
+    .module-name{font-size:14px;font-weight:600;color:var(--text)}
+    .module-desc{font-size:12px;color:var(--text-dim);margin-top:4px}
+
+    /* STATS */
+    #stats{background:linear-gradient(135deg,var(--dark2),#0a1628)}
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2px}
+    .stat-card{background:var(--surface);padding:40px 32px;text-align:center;position:relative;overflow:hidden}
+    .stat-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--primary),var(--accent2))}
+    .stat-number{font-size:48px;font-weight:900;letter-spacing:-2px}
+    .stat-label{color:var(--text-muted);font-size:14px;margin-top:6px}
+
+    /* TECH */
+    .tech-grid{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:40px}
+    .tech-pill{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);padding:8px 18px;border-radius:999px;font-size:13px;font-weight:500;color:var(--text-muted);transition:all .2s}
+    .tech-pill:hover{border-color:var(--primary-light);color:var(--text)}
+    .tech-dot{width:8px;height:8px;border-radius:50%}
+
+    /* PORTALS */
+    #portals{background:var(--dark2)}
+    .portals-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+    .portal-card{border-radius:var(--radius-lg);padding:40px 32px;border:1px solid var(--border);position:relative;overflow:hidden}
+    .portal-card.admin{background:linear-gradient(135deg,rgba(37,99,235,.1),rgba(139,92,246,.08))}
+    .portal-card.customer{background:linear-gradient(135deg,rgba(6,182,212,.1),rgba(16,185,129,.08))}
+    .portal-card.driver{background:linear-gradient(135deg,rgba(245,158,11,.1),rgba(239,68,68,.08))}
+    .portal-card.supplier{background:linear-gradient(135deg,rgba(139,92,246,.1),rgba(6,182,212,.08))}
+    .portal-icon{font-size:40px;margin-bottom:16px}
+    .portal-title{font-size:20px;font-weight:700;margin-bottom:10px}
+    .portal-desc{color:var(--text-muted);font-size:14px;line-height:1.7;margin-bottom:20px}
+    .portal-list{list-style:none}
+    .portal-list li{font-size:13px;color:var(--text-muted);padding:4px 0;display:flex;align-items:center;gap:8px}
+    .portal-list li::before{content:'✓';color:var(--green);font-weight:700;flex-shrink:0}
+
+    /* CTA */
+    #cta{background:linear-gradient(135deg,var(--primary-dark),var(--accent2));text-align:center;padding:100px 24px;position:relative;overflow:hidden}
+    #cta::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23fff' fill-opacity='0.03'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
+    .cta-title{font-size:clamp(28px,5vw,52px);font-weight:900;letter-spacing:-1px;margin-bottom:20px;position:relative}
+    .cta-sub{font-size:18px;opacity:.85;margin-bottom:40px;position:relative;max-width:560px;margin-left:auto;margin-right:auto}
+    .cta-actions{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;position:relative}
+    .btn-white{display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--primary-dark);padding:16px 32px;border-radius:10px;font-weight:700;font-size:16px;text-decoration:none;transition:all .25s;box-shadow:0 4px 20px rgba(0,0,0,.2);border:none;cursor:pointer}
+    .btn-white:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,.3)}
+    .btn-outline-white{display:inline-flex;align-items:center;gap:8px;border:2px solid rgba(255,255,255,.5);color:#fff;padding:14px 28px;border-radius:10px;font-weight:600;font-size:16px;text-decoration:none;transition:all .25s;background:none;cursor:pointer}
+    .btn-outline-white:hover{border-color:#fff;background:rgba(255,255,255,.1)}
+
+    /* FAQ */
+    .faq-list{max-width:720px;margin:0 auto}
+    .faq-item{border-bottom:1px solid var(--border)}
+    .faq-q{width:100%;background:none;border:none;color:var(--text);text-align:left;padding:22px 0;font-size:16px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px}
+    .faq-icon{font-size:20px;color:var(--primary-light);transition:transform .3s;flex-shrink:0}
+    .faq-a{font-size:14px;color:var(--text-muted);line-height:1.7;max-height:0;overflow:hidden;transition:max-height .35s ease,padding .35s}
+    .faq-item.open .faq-a{max-height:300px;padding-bottom:20px}
+    .faq-item.open .faq-icon{transform:rotate(45deg)}
+
+    /* FOOTER */
+    footer{background:var(--dark2);border-top:1px solid var(--border);padding:64px 24px 32px}
+    .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;max-width:1200px;margin:0 auto}
+    @media(max-width:768px){.footer-grid{grid-template-columns:1fr;gap:32px}}
+    .footer-brand p{color:var(--text-muted);font-size:14px;line-height:1.7;margin-top:16px;max-width:280px}
+    .footer-heading{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin-bottom:16px}
+    .footer-links{list-style:none}
+    .footer-links li{margin-bottom:10px}
+    .footer-links a{color:var(--text-muted);text-decoration:none;font-size:14px;transition:color .2s}
+    .footer-links a:hover{color:var(--text)}
+    .footer-bottom{display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:48px auto 0;padding-top:24px;border-top:1px solid var(--border);flex-wrap:wrap;gap:12px}
+    .footer-copy{color:var(--text-dim);font-size:13px}
+    .footer-socials{display:flex;gap:12px}
+    .social-icon{width:36px;height:36px;border-radius:8px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;text-decoration:none;transition:all .2s}
+    .social-icon:hover{border-color:var(--primary-light);transform:translateY(-2px)}
+
+    /* ANNOUNCE */
+    .announce-bar{background:linear-gradient(90deg,var(--primary-dark),var(--accent2));text-align:center;padding:10px 24px;font-size:13px;font-weight:500}
+    .announce-bar button{color:#fff;font-weight:700;margin-left:8px;background:none;border:none;cursor:pointer;text-decoration:underline;font-size:13px}
+
+    /* LIVE PILL */
+    .live-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);color:var(--green);padding:4px 12px;border-radius:999px;font-size:12px;font-weight:600}
+    .live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:livepulse 1.5s infinite}
+    @keyframes livepulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+    /* FADE-IN */
+    .fade-in{opacity:0;transform:translateY(24px);transition:opacity .6s,transform .6s}
+    .fade-in.visible{opacity:1;transform:translateY(0)}
+
+    /* ─── REGISTRATION MODAL ──────────────────── */
+    .modal-overlay{
+      position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);
+      z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;
+      opacity:0;pointer-events:none;transition:opacity .3s;
+    }
+    .modal-overlay.open{opacity:1;pointer-events:all}
+    .modal-card{
+      background:var(--surface);border:1px solid var(--border);border-radius:24px;
+      padding:44px 40px;max-width:520px;width:100%;position:relative;
+      box-shadow:0 40px 100px rgba(0,0,0,.6);
+      transform:translateY(20px) scale(.97);transition:transform .3s;
+    }
+    .modal-overlay.open .modal-card{transform:translateY(0) scale(1)}
+    .modal-close{
+      position:absolute;top:18px;right:18px;width:34px;height:34px;
+      background:rgba(255,255,255,.05);border:1px solid var(--border);
+      border-radius:50%;color:var(--text-muted);font-size:16px;
+      cursor:pointer;display:flex;align-items:center;justify-content:center;
+      transition:all .2s;
+    }
+    .modal-close:hover{background:rgba(255,255,255,.1);color:var(--text)}
+    .modal-logo{display:flex;align-items:center;gap:10px;margin-bottom:28px}
+    .modal-logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--primary),var(--accent2));border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;color:#fff}
+    .modal-logo-text{font-size:18px;font-weight:800;color:var(--text)}
+    .modal-logo-text span{color:var(--primary-light)}
+    .modal-title{font-size:22px;font-weight:800;margin-bottom:8px;letter-spacing:-.5px}
+    .modal-sub{font-size:14px;color:var(--text-muted);margin-bottom:28px;line-height:1.6}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    @media(max-width:480px){.form-row{grid-template-columns:1fr}}
+    .form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+    .form-group label{font-size:12px;font-weight:600;color:var(--text-muted);letter-spacing:.4px;text-transform:uppercase}
+    .form-group input{
+      background:var(--dark2);border:1px solid var(--border);color:var(--text);
+      padding:11px 14px;border-radius:8px;font-size:14px;outline:none;
+      transition:border-color .2s;font-family:inherit;
+    }
+    .form-group input:focus{border-color:var(--primary)}
+    .form-group input::placeholder{color:var(--text-dim)}
+    .btn-submit{
+      width:100%;background:linear-gradient(135deg,var(--primary),var(--accent2));
+      color:#fff;border:none;padding:14px;border-radius:10px;
+      font-size:15px;font-weight:700;cursor:pointer;margin-top:6px;
+      transition:all .25s;box-shadow:0 4px 20px rgba(37,99,235,.35);
+      display:flex;align-items:center;justify-content:center;gap:8px;
+    }
+    .btn-submit:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 28px rgba(37,99,235,.5)}
+    .btn-submit:disabled{opacity:.6;cursor:not-allowed}
+    .form-note{font-size:11px;color:var(--text-dim);text-align:center;margin-top:12px}
+    .modal-success{display:none;text-align:center;padding:16px 0}
+    .success-emoji{font-size:64px;margin-bottom:20px;display:block}
+    .success-title{font-size:22px;font-weight:800;margin-bottom:12px}
+    .success-desc{font-size:15px;color:var(--text-muted);line-height:1.7;margin-bottom:28px}
+    .success-back{color:var(--primary-light);font-size:14px;cursor:pointer;background:none;border:none;text-decoration:underline}
+    .form-error{
+      background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);
+      color:#fca5a5;font-size:13px;padding:10px 14px;border-radius:8px;
+      margin-bottom:14px;display:none;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ANNOUNCE BAR -->
+<div class="announce-bar">
+  🚀 NCMSoft v2.0 yayında — Gerçek zamanlı GPS takibi ve WhatsApp entegrasyonu.
+  <button onclick="openDemoModal()">Demo'yu deneyin →</button>
+</div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <a href="#" class="logo">
+      <div class="logo-icon">N</div>
+      <span class="logo-text">NCM<span>SOFT</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#features">Özellikler</a></li>
+      <li><a href="#modules">Modüller</a></li>
+      <li><a href="#portals">Portallar</a></li>
+      <li><a href="#how">Nasıl Çalışır</a></li>
+      <li><a href="#faq">SSS</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="#contact" class="btn-secondary" style="padding:9px 18px;font-size:14px;">İletişim</a>
+      <button onclick="openDemoModal()" class="nav-demo">🚀 Demo Girişi</button>
+    </div>
+    <button class="hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="blob blob-blue"  style="width:700px;height:700px;top:-150px;left:-250px;"></div>
+  <div class="blob blob-purple" style="width:500px;height:500px;top:50px;right:-200px;"></div>
+  <div class="blob blob-cyan"  style="width:350px;height:350px;bottom:-50px;left:35%;"></div>
+  <div class="container">
+    <div class="hero-content fade-in">
+      <div class="hero-badge">
+        <span class="badge">🏆 Lojistik Teknolojisi</span>
+        <span class="live-pill" style="margin-left:10px;"><span class="live-dot"></span> Canlı Demo</span>
+      </div>
+      <h1 class="hero-title">
+        Lojistiğinizi<br>
+        <span class="gradient-text">Dijitalleştirin.</span><br>
+        Büyüyün.
+      </h1>
+      <p class="hero-subtitle">
+        NCMSoft, sipariş yönetiminden filo takibine, müşteri portalından WhatsApp otomasyonuna kadar
+        tüm lojistik süreçlerinizi tek platformda birleştirir.
+      </p>
+      <div class="hero-actions">
+        <button onclick="openDemoModal()" class="btn-primary">🚀 Ücretsiz Demo Deneyin</button>
+        <a href="#features" class="btn-secondary">Özellikleri Keşfet →</a>
+      </div>
+      <div class="hero-stats">
+        <div><div class="hero-stat-num gradient-text">10K+</div><div class="hero-stat-label">Yönetilen Sipariş</div></div>
+        <div><div class="hero-stat-num gradient-text">99.9%</div><div class="hero-stat-label">Çalışma Süresi</div></div>
+        <div><div class="hero-stat-num gradient-text">4</div><div class="hero-stat-label">Entegre Platform</div></div>
+        <div><div class="hero-stat-num gradient-text">24/7</div><div class="hero-stat-label">Canlı Takip</div></div>
+      </div>
+    </div>
+  </div>
+  <!-- Dashboard Mockup -->
+  <div class="hero-visual fade-in" style="transition-delay:.3s;">
+    <div class="dashboard-mockup">
+      <div class="mockup-bar">
+        <span class="dot" style="background:#ff5f56;"></span>
+        <span class="dot" style="background:#ffbd2e;"></span>
+        <span class="dot" style="background:#27c93f;"></span>
+        <span style="margin-left:12px;font-size:12px;color:var(--text-dim);">NCMSoft Dashboard</span>
+      </div>
+      <div class="mockup-body">
+        <div class="mockup-kpis">
+          <div class="kpi-card"><div class="kpi-label">Aktif Sipariş</div><div class="kpi-value" style="color:#60a5fa;">247</div><div class="kpi-trend trend-up">↑ +12%</div></div>
+          <div class="kpi-card"><div class="kpi-label">Teslimatta</div><div class="kpi-value" style="color:#34d399;">84</div><div class="kpi-trend trend-up">↑ +8%</div></div>
+          <div class="kpi-card"><div class="kpi-label">Ciro (₺)</div><div class="kpi-value" style="color:#a78bfa;">1.2M</div><div class="kpi-trend trend-dn">↓ -3%</div></div>
+        </div>
+        <div class="mockup-map">
+          <div class="map-grid"></div>
+          <div class="map-dot" style="top:30%;left:25%;"></div>
+          <div class="map-dot" style="top:40%;left:60%;"></div>
+          <div class="map-dot" style="top:65%;left:40%;"></div>
+          <span class="map-label">🟢 3 Araç Aktif</span>
+        </div>
+        <div class="mockup-table">
+          <div class="table-header"><span>Sipariş No</span><span>Durum</span><span>Sürücü</span></div>
+          <div class="table-row"><span>#NC-2847</span><span><span class="status-pill s-transit">Yolda</span></span><span style="color:var(--text-muted);">A. Kaya</span></div>
+          <div class="table-row"><span>#NC-2846</span><span><span class="status-pill s-delivered">Teslim</span></span><span style="color:var(--text-muted);">M. Demir</span></div>
+          <div class="table-row"><span>#NC-2845</span><span><span class="status-pill s-pending">Bekliyor</span></span><span style="color:var(--text-muted);">—</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="badge">Temel Özellikler</span>
+      <h2 class="section-title">Her şey tek platformda</h2>
+      <p class="section-subtitle">Modern lojistik operasyonu için ihtiyacınız olan tüm araçlar NCMSoft'ta bir arada.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card fade-in">
+        <div class="feature-icon" style="background:rgba(37,99,235,.15);">📍</div>
+        <div class="feature-title">Gerçek Zamanlı GPS Takibi</div>
+        <div class="feature-desc">Sürücülerinizin konumunu anlık olarak harita üzerinde takip edin. Müşterileriniz siparişlerini canlı izleyebilir.</div>
+        <div class="feature-tags"><span class="tag">Mapbox</span><span class="tag">Leaflet.js</span><span class="tag">Socket.IO</span></div>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon" style="background:rgba(16,185,129,.15);">💬</div>
+        <div class="feature-title">WhatsApp Otomasyonu</div>
+        <div class="feature-desc">Sipariş durumu değiştiğinde müşterilere otomatik WhatsApp bildirimi gönderin. Sürücü adı, plaka ve ETA bilgisiyle.</div>
+        <div class="feature-tags"><span class="tag">Baileys</span><span class="tag">Otomatik</span><span class="tag">Şablonlar</span></div>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon" style="background:rgba(139,92,246,.15);">📦</div>
+        <div class="feature-title">Sipariş Yönetimi</div>
+        <div class="feature-desc">Sipariş oluşturma, gümrük süreci, teslimat takibi ve tüm operasyon akışı eksiksiz dijital ortamda.</div>
+        <div class="feature-tags"><span class="tag">Teklif</span><span class="tag">Fatura</span><span class="tag">Kargo</span></div>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon" style="background:rgba(245,158,11,.15);">🚛</div>
+        <div class="feature-title">Filo Yönetimi</div>
+        <div class="feature-desc">Araç bakımı, yakıt takibi, sefer planlama ve sürücü performansını merkezi panelden yönetin.</div>
+        <div class="feature-tags"><span class="tag">Bakım</span><span class="tag">Yakıt</span><span class="tag">Sefer</span></div>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon" style="background:rgba(6,182,212,.15);">💰</div>
+        <div class="feature-title">Finans Modülü</div>
+        <div class="feature-desc">Faturalar, ödemeler, maliyet yönetimi ve kapsamlı finansal raporlama tek ekranda.</div>
+        <div class="feature-tags"><span class="tag">Fatura</span><span class="tag">Ödeme</span><span class="tag">Maliyet</span></div>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon" style="background:rgba(239,68,68,.15);">📊</div>
+        <div class="feature-title">Raporlama & Analitik</div>
+        <div class="feature-desc">KPI dashboard'ları, özel rapor oluşturucu ve gerçek zamanlı metriklerle kararlarınızı veriye dayandırın.</div>
+        <div class="feature-tags"><span class="tag">KPI</span><span class="tag">Özel Rapor</span><span class="tag">Dashboard</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="badge">Nasıl Çalışır</span>
+      <h2 class="section-title">4 Adımda Dijital Lojistik</h2>
+      <p class="section-subtitle">Dakikalar içinde kurulumu tamamlayın ve operasyonlarınızı dijitalleştirin.</p>
+    </div>
+    <div class="steps">
+      <div class="step fade-in"><div class="step-num">1</div><div class="step-title">Kayıt & Kurulum</div><div class="step-desc">Şirket bilgilerinizi girin, kullanıcıları ve rolleri tanımlayın. Dakikalar içinde hazır.</div></div>
+      <div class="step fade-in"><div class="step-num">2</div><div class="step-title">Veri Aktarımı</div><div class="step-desc">Müşterilerinizi, araçlarınızı ve sürücülerinizi sisteme ekleyin. İçe aktarma desteği mevcut.</div></div>
+      <div class="step fade-in"><div class="step-num">3</div><div class="step-title">Operasyon Başlar</div><div class="step-desc">Siparişleri oluşturun, sürücülere atayın. WhatsApp bildirimleri otomatik gider.</div></div>
+      <div class="step fade-in"><div class="step-num">4</div><div class="step-title">İzle & Büyü</div><div class="step-desc">Gerçek zamanlı takip, raporlar ve KPI'larla süreçlerinizi sürekli iyileştirin.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- MODULES -->
+<section id="modules">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="badge">Modüller</span>
+      <h2 class="section-title">Eksiksiz Modül Seti</h2>
+      <p class="section-subtitle">Lojistik operasyonunuzun her boyutunu kapsayan entegre modüller.</p>
+    </div>
+    <div class="modules-grid">
+      <div class="module-card fade-in"><div class="module-emoji">📦</div><div class="module-name">Sipariş Yönetimi</div><div class="module-desc">Oluştur, takip et, teslim et</div></div>
+      <div class="module-card fade-in"><div class="module-emoji">🚛</div><div class="module-name">Filo & Araçlar</div><div class="module-desc">Bakım, yakıt, sefer</div></div>
+      <div class="module-card fade-in"><div class="module-emoji">👨‍✈️</div><div class="module-name">Sürücü Yönetimi</div><div class="module-desc">Atama, takip, performans</div></div>
+      <div class="module-card fade-in"><div class="module-emoji">📍</div><div class="module-name">Canlı Harita</div><div class="module-desc">GPS izleme, rota</div></div>
+      <div class="module-card fade-in"><div class="module-emoji">💬</div><div class="module-name">WhatsApp Bot</div><div class="module-desc">Otomatik bildirimler</div></div>
+      <div class="module-card fade-in"><div class="module-emoji">💰</div><div class="module-name">Finans</div><div class="module-desc">Fatura, ödeme, maliyet</div></div>
+      <div class="module-card fade-in"><div class="module-emoji">📊</div><div class="module-name">Raporlama</div><div class="module-desc">KPI, analitik, özel rapor</div></div>
+      <div class="module-card fade-in"><div class="module-emoji">🤝</div><div class="module-name">CRM</div><div class="module-desc">Fırsatlar, sözleşmeler</div></div>
+      <div class="module-card fade-in"><div class="module-emoji">📋</div><div class="module-name">Teklif & Sorgu</div><div class="module-desc">Teklif, ihale, fiyatlama</div></div>
+      <div class="module-card fade-in"><div class="module-emoji">🧑‍🤝‍🧑</div><div class="module-name">İş Ortağı</div><div class="module-desc">Müşteri, tedarikçi, kişi</div></div>
+      <div class="module-card fade-in"><div class="module-emoji">🔔</div><div class="module-name">Bildirimler</div><div class="module-desc">Şablonlar, kurallar, log</div></div>
+      <div class="module-card fade-in"><div class="module-emoji">🔐</div><div class="module-name">Rol & Yetki</div><div class="module-desc">RBAC, audit log</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section id="stats">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="badge">Rakamlarla NCMSoft</span>
+      <h2 class="section-title">Güvenilir. Ölçeklenebilir. Hızlı.</h2>
+    </div>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card fade-in"><div class="stat-number gradient-text">10K+</div><div class="stat-label">İşlenen Sipariş</div></div>
+    <div class="stat-card fade-in"><div class="stat-number gradient-text">99.9%</div><div class="stat-label">Uptime Garantisi</div></div>
+    <div class="stat-card fade-in"><div class="stat-number gradient-text">&lt;200ms</div><div class="stat-label">API Yanıt Süresi</div></div>
+    <div class="stat-card fade-in"><div class="stat-number gradient-text">4</div><div class="stat-label">Entegre Uygulama</div></div>
+    <div class="stat-card fade-in"><div class="stat-number gradient-text">TR/EN</div><div class="stat-label">Çoklu Dil Desteği</div></div>
+  </div>
+</section>
+
+<!-- PORTALS -->
+<section id="portals">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="badge">Portal Ekosistemi</span>
+      <h2 class="section-title">Herkes için ayrı portal</h2>
+      <p class="section-subtitle">Yöneticiden müşteriye, sürücüden tedarikçiye — herkes kendi ihtiyacına özel arayüzle çalışır.</p>
+    </div>
+    <div class="portals-grid">
+      <div class="portal-card admin fade-in">
+        <div class="portal-icon">🖥️</div>
+        <div class="portal-title">Admin & Operasyon Paneli</div>
+        <div class="portal-desc">Tüm lojistik operasyonlarınızı merkezi bir dashboarddan yönetin.</div>
+        <ul class="portal-list">
+          <li>Sipariş ve sefer yönetimi</li>
+          <li>Gerçek zamanlı filo takibi</li>
+          <li>Finans ve raporlama</li>
+          <li>Kullanıcı ve yetki yönetimi</li>
+          <li>WhatsApp bot yönetimi</li>
+        </ul>
+        <br>
+        <button onclick="openDemoModal()" class="btn-primary" style="font-size:13px;padding:10px 20px;">Demo Giriş →</button>
+      </div>
+      <div class="portal-card customer fade-in">
+        <div class="portal-icon">👤</div>
+        <div class="portal-title">Müşteri Portalı</div>
+        <div class="portal-desc">Müşterileriniz siparişlerini anlık izler, teklif alır ve faturalarını görür.</div>
+        <ul class="portal-list">
+          <li>Canlı sipariş takibi</li>
+          <li>Teklif ve sorgu yönetimi</li>
+          <li>Finans ve fatura görünümü</li>
+          <li>CRM entegrasyonu</li>
+          <li>WhatsApp bildirim alma</li>
+        </ul>
+        <br>
+        <button onclick="openDemoModal()" class="btn-primary" style="font-size:13px;padding:10px 20px;">Demo Giriş →</button>
+      </div>
+      <div class="portal-card supplier fade-in">
+        <div class="portal-icon">🏭</div>
+        <div class="portal-title">Tedarikçi Portalı</div>
+        <div class="portal-desc">Tedarikçileriniz ihale havuzuna katılır, teklif verir ve operasyonları takip eder.</div>
+        <ul class="portal-list">
+          <li>İhale havuzu</li>
+          <li>Teklif yönetimi</li>
+          <li>Operasyon paneli</li>
+          <li>Finans görünümü</li>
+        </ul>
+        <br>
+        <button onclick="openDemoModal()" class="btn-primary" style="font-size:13px;padding:10px 20px;">Demo Giriş →</button>
+      </div>
+      <div class="portal-card driver fade-in">
+        <div class="portal-icon">📱</div>
+        <div class="portal-title">Sürücü Mobil Uygulaması</div>
+        <div class="portal-desc">Sürücüleriniz iOS/Android uygulaması ile konumlarını paylaşır ve görevlerini yönetir.</div>
+        <ul class="portal-list">
+          <li>Gerçek zamanlı konum paylaşımı</li>
+          <li>Görev ve sefer bildirimleri</li>
+          <li>Offline çalışma desteği</li>
+          <li>FCM push bildirimleri</li>
+        </ul>
+        <br>
+        <button onclick="openDemoModal()" class="btn-primary" style="font-size:13px;padding:10px 20px;">Demo Giriş →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TECH STACK -->
+<section id="tech">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="badge">Teknoloji</span>
+      <h2 class="section-title">Modern teknoloji altyapısı</h2>
+      <p class="section-subtitle">Endüstri standardı açık kaynak teknolojilerle inşa edilmiş, güvenilir ve ölçeklenebilir altyapı.</p>
+    </div>
+    <div class="tech-grid fade-in">
+      <div class="tech-pill"><span class="tech-dot" style="background:#61dafb;"></span>React 19</div>
+      <div class="tech-pill"><span class="tech-dot" style="background:#646cff;"></span>Vite</div>
+      <div class="tech-pill"><span class="tech-dot" style="background:#38bdf8;"></span>Tailwind CSS</div>
+      <div class="tech-pill"><span class="tech-dot" style="background:#68a063;"></span>Node.js</div>
+      <div class="tech-pill"><span class="tech-dot" style="background:#fff;"></span>Express 5</div>
+      <div class="tech-pill"><span class="tech-dot" style="background:#336791;"></span>PostgreSQL</div>
+      <div class="tech-pill"><span class="tech-dot" style="background:#010101;"></span>Socket.IO</div>
+      <div class="tech-pill"><span class="tech-dot" style="background:#0088cc;"></span>React Native</div>
+      <div class="tech-pill"><span class="tech-dot" style="background:#ff4500;"></span>Mapbox GL</div>
+      <div class="tech-pill"><span class="tech-dot" style="background:#3d9970;"></span>Leaflet.js</div>
+      <div class="tech-pill"><span class="tech-dot" style="background:#25d366;"></span>WhatsApp Baileys</div>
+      <div class="tech-pill"><span class="tech-dot" style="background:#2496ed;"></span>Docker</div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" style="background:var(--dark2);">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="badge">Sıkça Sorulanlar</span>
+      <h2 class="section-title">Merak ettikleriniz</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item fade-in">
+        <button class="faq-q" onclick="toggleFaq(this)">NCMSoft'u kullanmaya başlamak için ne kadar süre gerekiyor?<span class="faq-icon">+</span></button>
+        <div class="faq-a">Temel kurulum ve kullanıcı tanımlama birkaç dakika içinde tamamlanır. Mevcut verilerinizin sisteme aktarılması da dahil olmak üzere tam operasyonel geçiş genellikle 1–3 iş günü içinde gerçekleşir. Demo ortamında hemen denemeye başlayabilirsiniz.</div>
+      </div>
+      <div class="faq-item fade-in">
+        <button class="faq-q" onclick="toggleFaq(this)">WhatsApp entegrasyonu nasıl çalışıyor?<span class="faq-icon">+</span></button>
+        <div class="faq-a">NCMSoft, Baileys kütüphanesi aracılığıyla WhatsApp Web'e bağlanır. Şirket WhatsApp numaranızla QR kod okutarak sistemi bağlarsınız. Ardından sipariş durumu değişimlerinde (onaylandı, yola çıktı, teslim edildi) müşterilere otomatik olarak özelleştirilebilir mesajlar gönderilir.</div>
+      </div>
+      <div class="faq-item fade-in">
+        <button class="faq-q" onclick="toggleFaq(this)">Sürücü mobil uygulaması iOS ve Android'de çalışıyor mu?<span class="faq-icon">+</span></button>
+        <div class="faq-a">Evet. React Native ile geliştirilen NCMSoft Sürücü Uygulaması hem iOS hem de Android platformlarında çalışır. Gerçek zamanlı konum paylaşımı, push bildirimleri (FCM), offline çalışma desteği ve dosya yönetimi özellikleri mevcuttur.</div>
+      </div>
+      <div class="faq-item fade-in">
+        <button class="faq-q" onclick="toggleFaq(this)">Rol ve yetki yönetimi nasıl işliyor?<span class="faq-icon">+</span></button>
+        <div class="faq-a">NCMSoft kapsamlı bir Role-Based Access Control (RBAC) sistemi içerir. Yönetici, Operasyon, Finans, Sürücü, Müşteri ve Tedarikçi gibi önceden tanımlanmış roller mevcuttur. Her rol için modül bazında yetkiler granüler olarak ayarlanabilir. Tüm işlemler audit log ile kaydedilir.</div>
+      </div>
+      <div class="faq-item fade-in">
+        <button class="faq-q" onclick="toggleFaq(this)">Veri güvenliği nasıl sağlanıyor?<span class="faq-icon">+</span></button>
+        <div class="faq-a">Platform JWT token tabanlı kimlik doğrulama, bcrypt şifre hashleme, Helmet.js güvenlik başlıkları ve CORS koruması kullanır. Tüm API istekleri tenant context kontrolünden geçer. PostgreSQL veritabanı şema bazında izole edilmiştir. Docker containerization ile altyapı güvenliği sağlanır.</div>
+      </div>
+      <div class="faq-item fade-in">
+        <button class="faq-q" onclick="toggleFaq(this)">Türkçe dil desteği var mı?<span class="faq-icon">+</span></button>
+        <div class="faq-a">Evet. NCMSoft i18next altyapısı ile tam Türkçe ve İngilizce dil desteği sunar. Kullanıcılar arayüz dilini istedikleri zaman değiştirebilir. Tüm bildirim şablonları da her iki dilde özelleştirilebilir.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="cta-title">Lojistiğinizi dönüştürmeye<br>bugün başlayın</div>
+  <p class="cta-sub">Demo ortamında tüm özellikleri ücretsiz keşfedin. Kredi kartı gerekmez.</p>
+  <div class="cta-actions">
+    <button onclick="openDemoModal()" class="btn-white">🚀 Demo'yu Açın</button>
+    <a href="#contact" class="btn-outline-white">📞 Bizimle İletişime Geçin</a>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="badge">İletişim</span>
+      <h2 class="section-title">Birlikte büyüyelim</h2>
+      <p class="section-subtitle">Demo talebi, fiyat bilgisi veya entegrasyon soruları için bize ulaşın.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;max-width:900px;margin:0 auto;" class="fade-in">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:32px;text-align:center;">
+        <div style="font-size:40px;margin-bottom:12px;">📧</div>
+        <div style="font-weight:700;margin-bottom:6px;">E-posta</div>
+        <div style="color:var(--text-muted);font-size:14px;margin-bottom:16px;">Sorularınız için bize yazın</div>
+        <a href="mailto:info@ncmteknoloji.com" style="color:#60a5fa;text-decoration:none;font-weight:600;">info@ncmteknoloji.com</a>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:32px;text-align:center;">
+        <div style="font-size:40px;margin-bottom:12px;">🚀</div>
+        <div style="font-weight:700;margin-bottom:6px;">Canlı Demo</div>
+        <div style="color:var(--text-muted);font-size:14px;margin-bottom:16px;">Hemen denemeye başlayın</div>
+        <button onclick="openDemoModal()" class="btn-primary" style="font-size:14px;padding:10px 20px;">Demo'yu Aç →</button>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:32px;text-align:center;">
+        <div style="font-size:40px;margin-bottom:12px;">💬</div>
+        <div style="font-weight:700;margin-bottom:6px;">WhatsApp</div>
+        <div style="color:var(--text-muted);font-size:14px;margin-bottom:16px;">Hızlı destek için</div>
+        <a href="https://wa.me/905000000000" target="_blank" style="color:#25d366;text-decoration:none;font-weight:600;">+90 500 000 00 00</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="#" class="logo">
+        <div class="logo-icon">N</div>
+        <span class="logo-text">NCM<span>SOFT</span></span>
+      </a>
+      <p>NCM Teknoloji tarafından geliştirilen NCMSoft, lojistik ve tedarik zinciri yönetimini dijitalleştiren kurumsal bir platform çözümüdür.</p>
+    </div>
+    <div>
+      <div class="footer-heading">Platform</div>
+      <ul class="footer-links">
+        <li><a href="#features">Özellikler</a></li>
+        <li><a href="#modules">Modüller</a></li>
+        <li><a href="#portals">Portallar</a></li>
+        <li><a href="#" onclick="openDemoModal();return false;">Demo Girişi</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-heading">Şirket</div>
+      <ul class="footer-links">
+        <li><a href="#how">Nasıl Çalışır</a></li>
+        <li><a href="#tech">Teknoloji</a></li>
+        <li><a href="#faq">SSS</a></li>
+        <li><a href="#contact">İletişim</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-heading">Bağlantı</div>
+      <ul class="footer-links">
+        <li><a href="http://portal.ncmteknoloji.com" target="_blank">portal.ncmteknoloji.com</a></li>
+        <li><a href="mailto:info@ncmteknoloji.com">info@ncmteknoloji.com</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2025 NCM Teknoloji. Tüm hakları saklıdır. NCMSoft v2.0</div>
+    <div class="footer-socials">
+      <a href="#" class="social-icon" title="LinkedIn">in</a>
+      <a href="#" class="social-icon" title="Twitter">𝕏</a>
+      <a href="#" class="social-icon" title="GitHub">⌥</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ─── REGISTRATION MODAL ──────────────────── -->
+<div id="demoModal" class="modal-overlay" onclick="closeModalOutside(event)">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeDemoModal()">✕</button>
+
+    <!-- FORM STATE -->
+    <div id="modalFormWrap">
+      <div class="modal-logo">
+        <div class="modal-logo-icon">N</div>
+        <div class="modal-logo-text">NCM<span>SOFT</span></div>
+      </div>
+      <div class="modal-title">Demo Erişimi Talep Et</div>
+      <div class="modal-sub">NCMSoft demo platformunu ücretsiz keşfetmek için bilgilerinizi girin. E-posta adresinize erişim bağlantısı gönderilecektir.</div>
+
+      <div class="form-error" id="formError"></div>
+
+      <form onsubmit="submitRegistration(event)" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Ad *</label>
+            <input type="text" id="reg_first_name" required placeholder="Adınız" autocomplete="given-name" />
+          </div>
+          <div class="form-group">
+            <label>Soyad *</label>
+            <input type="text" id="reg_last_name" required placeholder="Soyadınız" autocomplete="family-name" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>E-posta *</label>
+          <input type="email" id="reg_email" required placeholder="ornek@firma.com" autocomplete="email" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Telefon</label>
+            <input type="tel" id="reg_phone" placeholder="+90 5XX XXX XXXX" autocomplete="tel" />
+          </div>
+          <div class="form-group">
+            <label>Firma Adı</label>
+            <input type="text" id="reg_company" placeholder="Firma Adınız" autocomplete="organization" />
+          </div>
+        </div>
+        <button type="submit" class="btn-submit" id="submitBtn">
+          <span id="submitBtnText">Erişim Bağlantısı Gönder →</span>
+        </button>
+      </form>
+      <p class="form-note">Bilgileriniz güvende. Spam göndermeyiz.</p>
+    </div>
+
+    <!-- SUCCESS STATE -->
+    <div class="modal-success" id="modalSuccess">
+      <span class="success-emoji">✉️</span>
+      <div class="success-title">E-postanızı Kontrol Edin!</div>
+      <div class="success-desc" id="successDesc">Doğrulama bağlantısı e-posta adresinize gönderildi. Bağlantıya tıklayarak demo portala erişebilirsiniz.</div>
+      <button class="success-back" onclick="resetModal()">← Geri Dön</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── VISITOR TRACKING ──────────────────────────────────────
+(function () {
+  const sid = sessionStorage.getItem('ncm_sid') || (() => {
+    const id = Math.random().toString(36).substr(2, 16);
+    sessionStorage.setItem('ncm_sid', id);
+    return id;
+  })();
+  fetch('/api/track', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      referrer: document.referrer,
+      page: window.location.pathname + window.location.search,
+      screen_res: `${screen.width}x${screen.height}`,
+      language: navigator.language || navigator.userLanguage || '',
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || '',
+      session_id: sid,
+    }),
+  }).catch(() => {});
+})();
+
+// ── NAV SCROLL ────────────────────────────────────────────
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').style.padding = window.scrollY > 40 ? '0' : '';
+});
+
+// ── FADE-IN OBSERVER ──────────────────────────────────────
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+// ── FAQ ───────────────────────────────────────────────────
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+}
+
+// ── MOBILE MENU ───────────────────────────────────────────
+function toggleMenu() {
+  const links = document.querySelector('.nav-links');
+  if (links.style.display === 'flex') {
+    links.style.display = '';
+  } else {
+    links.style.cssText = 'display:flex;flex-direction:column;position:absolute;top:70px;left:0;right:0;background:var(--dark2);padding:20px 24px;gap:16px;border-bottom:1px solid var(--border);z-index:99;';
+  }
+}
+
+// ── DEMO MODAL ────────────────────────────────────────────
+function openDemoModal() {
+  document.getElementById('demoModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => document.getElementById('reg_first_name').focus(), 300);
+}
+
+function closeDemoModal() {
+  document.getElementById('demoModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('demoModal')) closeDemoModal();
+}
+
+function resetModal() {
+  document.getElementById('modalSuccess').style.display = 'none';
+  document.getElementById('modalFormWrap').style.display = 'block';
+  document.getElementById('formError').style.display = 'none';
+  document.getElementById('submitBtn').disabled = false;
+  document.getElementById('submitBtnText').textContent = 'Erişim Bağlantısı Gönder →';
+}
+
+async function submitRegistration(e) {
+  e.preventDefault();
+  const errEl = document.getElementById('formError');
+  errEl.style.display = 'none';
+
+  const data = {
+    first_name: document.getElementById('reg_first_name').value.trim(),
+    last_name:  document.getElementById('reg_last_name').value.trim(),
+    email:      document.getElementById('reg_email').value.trim(),
+    phone:      document.getElementById('reg_phone').value.trim(),
+    company:    document.getElementById('reg_company').value.trim(),
+  };
+
+  if (!data.first_name || !data.last_name || !data.email) {
+    errEl.textContent = 'Ad, soyad ve e-posta alanları zorunludur.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  const btn = document.getElementById('submitBtn');
+  const txt = document.getElementById('submitBtnText');
+  btn.disabled = true;
+  txt.textContent = 'Gönderiliyor...';
+
+  try {
+    const res = await fetch('/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    const result = await res.json();
+
+    if (result.ok) {
+      document.getElementById('modalFormWrap').style.display = 'none';
+      document.getElementById('modalSuccess').style.display = 'block';
+      document.getElementById('successDesc').textContent = result.message;
+    } else {
+      errEl.textContent = result.error || 'Bir hata oluştu. Lütfen tekrar deneyin.';
+      errEl.style.display = 'block';
+      btn.disabled = false;
+      txt.textContent = 'Erişim Bağlantısı Gönder →';
+    }
+  } catch {
+    errEl.textContent = 'Bağlantı hatası. Lütfen tekrar deneyin.';
+    errEl.style.display = 'block';
+    btn.disabled = false;
+    txt.textContent = 'Erişim Bağlantısı Gönder →';
+  }
+}
+
+// ESC key closes modal
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeDemoModal();
+});
+</script>
+</body>
+</html>

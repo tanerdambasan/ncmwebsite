@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NCMSoft — E-posta Doğrulama</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0a0f1e;
+      color: #f1f5f9;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      overflow: hidden;
+    }
+    .blob {
+      position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0;
+    }
+    .card {
+      background: #1e293b;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 24px;
+      padding: 56px 48px;
+      text-align: center;
+      max-width: 480px;
+      width: 100%;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.4);
+    }
+    .icon { font-size: 72px; margin-bottom: 24px; display: block; }
+    h1 { font-size: 28px; font-weight: 800; margin-bottom: 14px; }
+    p { color: #94a3b8; font-size: 16px; line-height: 1.7; margin-bottom: 32px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      color: #fff; padding: 16px 40px; border-radius: 10px;
+      font-weight: 700; font-size: 16px; text-decoration: none;
+      box-shadow: 0 4px 20px rgba(37,99,235,0.4);
+      transition: all .25s;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(37,99,235,0.5); }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: #64748b; font-size: 14px; text-decoration: none;
+      margin-top: 16px; transition: color .2s;
+    }
+    .btn-ghost:hover { color: #94a3b8; }
+    .logo-row {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      margin-bottom: 40px;
+    }
+    .logo-icon {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      border-radius: 10px; display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 900; color: #fff;
+    }
+    .logo-text { font-size: 20px; font-weight: 800; }
+    .logo-text span { color: #60a5fa; }
+    .divider { height: 1px; background: rgba(255,255,255,0.07); margin: 28px 0; }
+    .info-box {
+      background: rgba(37,99,235,0.08);
+      border: 1px solid rgba(37,99,235,0.2);
+      border-radius: 10px; padding: 14px 20px;
+      font-size: 13px; color: #93c5fd; line-height: 1.6;
+      margin-bottom: 28px; text-align: left;
+    }
+    .countdown {
+      font-size: 13px; color: #475569; margin-top: 8px;
+    }
+    #timer { color: #60a5fa; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <div class="blob" style="width:500px;height:500px;background:rgba(37,99,235,0.2);top:-100px;left:-200px;"></div>
+  <div class="blob" style="width:400px;height:400px;background:rgba(139,92,246,0.15);bottom:-100px;right:-150px;"></div>
+
+  <div class="card" id="card">
+    <div class="logo-row">
+      <div class="logo-icon">N</div>
+      <div class="logo-text">NCM<span>SOFT</span></div>
+    </div>
+    <!-- Content injected by JS -->
+  </div>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const status = params.get('status');
+    const name   = params.get('name') || '';
+    const card   = document.getElementById('card');
+
+    const DEMO_URL = 'http://portal.ncmteknoloji.com';
+
+    if (status === 'success') {
+      card.innerHTML += `
+        <span class="icon">🎉</span>
+        <h1>E-posta Doğrulandı!</h1>
+        <p>Merhaba <strong style="color:#f1f5f9;">${decodeURIComponent(name)}</strong>, e-posta adresiniz başarıyla doğrulandı.<br>NCMSoft demo platformuna erişebilirsiniz.</p>
+        <div class="info-box">
+          🚀 Demo portala yönlendiriliyorsunuz...<br>
+          Otomatik yönlendirme: <strong id="timer">5</strong> saniye
+        </div>
+        <a href="${DEMO_URL}" class="btn">🚀 Demo Portala Git</a>
+        <br>
+        <a href="/" class="btn-ghost">← Ana Sayfaya Dön</a>
+      `;
+
+      let secs = 5;
+      const t = setInterval(() => {
+        secs--;
+        const el = document.getElementById('timer');
+        if (el) el.textContent = secs;
+        if (secs <= 0) { clearInterval(t); location.href = DEMO_URL; }
+      }, 1000);
+
+    } else if (status === 'invalid') {
+      card.innerHTML += `
+        <span class="icon">❌</span>
+        <h1>Geçersiz Bağlantı</h1>
+        <p>Bu doğrulama bağlantısı geçerli değil veya süresi dolmuş.<br>Lütfen ana sayfadan yeniden kayıt olun.</p>
+        <a href="/" class="btn">← Ana Sayfaya Dön</a>
+      `;
+    } else {
+      card.innerHTML += `
+        <span class="icon">🔗</span>
+        <h1>Sayfa Bulunamadı</h1>
+        <p>Geçersiz bir URL'e geldiniz.</p>
+        <a href="/" class="btn">← Ana Sayfaya Dön</a>
+      `;
+    }
+  </script>
+</body>
+</html>

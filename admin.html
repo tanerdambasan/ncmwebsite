@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NCMSoft — Admin Paneli</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --dark: #0a0f1e; --dark2: #0f172a; --surface: #1e293b; --surface2: #273448;
+      --border: rgba(255,255,255,0.08); --text: #f1f5f9; --muted: #94a3b8;
+      --dim: #64748b; --primary: #2563eb; --accent: #8b5cf6;
+      --green: #10b981; --orange: #f59e0b; --red: #ef4444;
+    }
+    body { font-family: 'Inter', sans-serif; background: var(--dark); color: var(--text); min-height: 100vh; }
+
+    /* Login */
+    #loginScreen {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 24px;
+    }
+    .login-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
+      padding: 48px 40px; max-width: 400px; width: 100%; text-align: center;
+    }
+    .login-logo { font-size: 36px; font-weight: 900; margin-bottom: 8px; }
+    .login-logo span { color: #60a5fa; }
+    .login-sub { color: var(--muted); font-size: 14px; margin-bottom: 32px; }
+    .input-wrap { text-align: left; margin-bottom: 16px; }
+    .input-wrap label { font-size: 12px; font-weight: 600; color: var(--muted); display: block; margin-bottom: 6px; letter-spacing: .5px; text-transform: uppercase; }
+    .input-wrap input {
+      width: 100%; background: var(--dark2); border: 1px solid var(--border);
+      color: var(--text); padding: 12px 16px; border-radius: 8px; font-size: 14px;
+      outline: none; transition: border-color .2s;
+    }
+    .input-wrap input:focus { border-color: var(--primary); }
+    .btn-login {
+      width: 100%; background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff; border: none; padding: 14px; border-radius: 8px;
+      font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 8px;
+      transition: opacity .2s;
+    }
+    .btn-login:hover { opacity: .9; }
+    .login-error { color: #fca5a5; font-size: 13px; margin-top: 10px; display: none; }
+
+    /* App shell */
+    #app { display: none; }
+    .topbar {
+      background: var(--dark2); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 28px; position: sticky; top: 0; z-index: 50;
+    }
+    .topbar-logo { font-size: 18px; font-weight: 800; }
+    .topbar-logo span { color: #60a5fa; }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+    .badge-live {
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.25);
+      color: var(--green); padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600;
+    }
+    .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: lp 1.5s infinite; }
+    @keyframes lp { 0%,100%{opacity:1} 50%{opacity:.3} }
+    .btn-refresh {
+      background: var(--surface); border: 1px solid var(--border); color: var(--muted);
+      padding: 7px 16px; border-radius: 7px; font-size: 13px; cursor: pointer; transition: all .2s;
+    }
+    .btn-refresh:hover { color: var(--text); border-color: var(--primary); }
+
+    main { padding: 28px; max-width: 1400px; margin: 0 auto; }
+
+    /* Stats row */
+    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 28px; }
+    .stat-box {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+      padding: 22px 20px; position: relative; overflow: hidden;
+    }
+    .stat-box::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+    }
+    .stat-label { font-size: 11px; color: var(--dim); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
+    .stat-val { font-size: 32px; font-weight: 900; letter-spacing: -1px; }
+    .stat-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    /* Tabs */
+    .tabs { display: flex; gap: 4px; margin-bottom: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 4px; width: fit-content; }
+    .tab {
+      padding: 9px 20px; border-radius: 7px; font-size: 13px; font-weight: 600;
+      cursor: pointer; color: var(--muted); transition: all .2s; border: none; background: none;
+    }
+    .tab.active { background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Tables */
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 24px; }
+    .card-header { padding: 18px 22px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+    .card-title { font-size: 15px; font-weight: 700; }
+    .card-meta { font-size: 12px; color: var(--muted); }
+    .search-box {
+      background: var(--dark2); border: 1px solid var(--border); color: var(--text);
+      padding: 8px 14px; border-radius: 7px; font-size: 13px; width: 220px; outline: none;
+    }
+    .search-box:focus { border-color: var(--primary); }
+    table { width: 100%; border-collapse: collapse; }
+    th { font-size: 11px; font-weight: 600; color: var(--dim); text-transform: uppercase; letter-spacing: .5px; padding: 12px 18px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    td { padding: 13px 18px; font-size: 13px; color: var(--muted); border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+    .td-main { color: var(--text); font-weight: 600; }
+    .pill {
+      display: inline-block; padding: 3px 10px; border-radius: 999px;
+      font-size: 11px; font-weight: 600;
+    }
+    .pill-green { background: rgba(16,185,129,0.12); color: #6ee7b7; }
+    .pill-yellow { background: rgba(245,158,11,0.12); color: #fcd34d; }
+    .pill-blue { background: rgba(37,99,235,0.12); color: #93c5fd; }
+    .pill-red { background: rgba(239,68,68,0.12); color: #fca5a5; }
+
+    .btn-del {
+      background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2);
+      color: #fca5a5; padding: 4px 12px; border-radius: 6px; font-size: 12px;
+      cursor: pointer; transition: all .2s;
+    }
+    .btn-del:hover { background: rgba(239,68,68,0.2); }
+
+    /* Analytics */
+    .analytics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .bar-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .bar-label { width: 110px; font-size: 13px; color: var(--muted); flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .bar-track { flex: 1; background: rgba(255,255,255,0.05); border-radius: 4px; height: 8px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--primary), var(--accent)); transition: width .6s; }
+    .bar-cnt { font-size: 12px; color: var(--dim); width: 32px; text-align: right; flex-shrink: 0; }
+
+    .empty { text-align: center; padding: 48px; color: var(--dim); font-size: 14px; }
+
+    /* CSV export */
+    .btn-export {
+      background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2);
+      color: var(--green); padding: 6px 14px; border-radius: 7px; font-size: 12px;
+      font-weight: 600; cursor: pointer; transition: all .2s;
+    }
+    .btn-export:hover { background: rgba(16,185,129,0.2); }
+
+    /* Loading */
+    .loading { text-align: center; padding: 40px; color: var(--dim); font-size: 14px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin .7s linear infinite; margin-right: 8px; vertical-align: middle; }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">NCM<span>SOFT</span></div>
+    <div class="login-sub">Admin Paneli</div>
+    <div class="input-wrap">
+      <label>Admin Şifresi</label>
+      <input type="password" id="loginKey" placeholder="••••••••••••" onkeydown="if(event.key==='Enter') doLogin()" />
+    </div>
+    <button class="btn-login" onclick="doLogin()">Giriş Yap</button>
+    <div class="login-error" id="loginError">Hatalı şifre.</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-logo">NCM<span>SOFT</span> <span style="color:var(--dim);font-weight:500;font-size:14px;">— Admin</span></div>
+    <div class="topbar-right">
+      <div class="badge-live"><span class="live-dot"></span> Canlı</div>
+      <button class="btn-refresh" onclick="loadAll()">⟳ Yenile</button>
+      <a href="/" style="color:var(--dim);font-size:13px;text-decoration:none;">← Site</a>
+    </div>
+  </div>
+
+  <main>
+    <!-- Stats -->
+    <div class="stats-row" id="statsRow">
+      <div class="loading"><span class="spinner"></span>Yükleniyor...</div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('regs')">📋 Kayıtlar</button>
+      <button class="tab" onclick="switchTab('visitors')">👥 Ziyaretçiler</button>
+      <button class="tab" onclick="switchTab('analytics')">📊 Analitik</button>
+    </div>
+
+    <!-- Registrations -->
+    <div class="tab-panel active" id="tab-regs">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Demo Kayıtları</div>
+            <div class="card-meta" id="regCount">Yükleniyor...</div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+            <input class="search-box" id="regSearch" placeholder="🔍 Ara..." oninput="filterRegs()" />
+            <button class="btn-export" onclick="exportCSV('regs')">⬇ CSV</button>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th><th>Ad Soyad</th><th>E-posta</th><th>Telefon</th>
+                <th>Firma</th><th>Durum</th><th>IP</th><th>Tarih</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="regTable"><tr><td colspan="9" class="loading"><span class="spinner"></span>Yükleniyor...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Visitors -->
+    <div class="tab-panel" id="tab-visitors">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Ziyaretçi Kayıtları</div>
+            <div class="card-meta" id="visCount">Yükleniyor...</div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+            <input class="search-box" id="visSearch" placeholder="🔍 IP veya tarayıcı ara..." oninput="filterVis()" />
+            <button class="btn-export" onclick="exportCSV('visitors')">⬇ CSV</button>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th><th>IP</th><th>Tarayıcı</th><th>İşletim Sistemi</th>
+                <th>Cihaz</th><th>Sayfa</th><th>Dil</th><th>Saat Dilimi</th><th>Tarih</th>
+              </tr>
+            </thead>
+            <tbody id="visTable"><tr><td colspan="9" class="loading"><span class="spinner"></span>Yükleniyor...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Analytics -->
+    <div class="tab-panel" id="tab-analytics">
+      <div class="analytics-grid" id="analyticsGrid">
+        <div class="loading"><span class="spinner"></span>Yükleniyor...</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  let ADMIN_KEY = '';
+  let allRegs = [], allVis = [];
+
+  // ── LOGIN ─────────────────────────────
+  const savedKey = sessionStorage.getItem('ncm_admin_key');
+  if (savedKey) tryKey(savedKey);
+
+  function doLogin() {
+    const key = document.getElementById('loginKey').value.trim();
+    if (!key) return;
+    tryKey(key);
+  }
+
+  async function tryKey(key) {
+    try {
+      const r = await fetch(`/api/admin/stats?key=${encodeURIComponent(key)}`);
+      if (r.ok) {
+        ADMIN_KEY = key;
+        sessionStorage.setItem('ncm_admin_key', key);
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+        loadAll();
+      } else {
+        document.getElementById('loginError').style.display = 'block';
+      }
+    } catch {
+      document.getElementById('loginError').style.display = 'block';
+    }
+  }
+
+  // ── TABS ──────────────────────────────
+  function switchTab(name) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  // ── LOAD ALL ──────────────────────────
+  async function loadAll() {
+    await Promise.all([loadStats(), loadRegs(), loadVis(), loadAnalytics()]);
+  }
+
+  async function loadStats() {
+    const d = await apiFetch('/api/admin/stats');
+    document.getElementById('statsRow').innerHTML = `
+      <div class="stat-box"><div class="stat-label">Toplam Ziyaret</div><div class="stat-val">${d.totalVisitors.toLocaleString('tr')}</div><div class="stat-sub">Benzersiz IP: ${d.uniqueIPs}</div></div>
+      <div class="stat-box"><div class="stat-label">Bugün Ziyaret</div><div class="stat-val" style="color:#60a5fa;">${d.todayVisitors}</div><div class="stat-sub">Bugün kaydedilen</div></div>
+      <div class="stat-box"><div class="stat-label">Toplam Kayıt</div><div class="stat-val" style="color:#a78bfa;">${d.totalRegs}</div><div class="stat-sub">Demo talebi</div></div>
+      <div class="stat-box"><div class="stat-label">Doğrulanmış</div><div class="stat-val" style="color:#34d399;">${d.verifiedRegs}</div><div class="stat-sub">E-posta onaylı</div></div>
+      <div class="stat-box"><div class="stat-label">Bugün Kayıt</div><div class="stat-val" style="color:#fbbf24;">${d.todayRegs}</div><div class="stat-sub">Yeni demo talebi</div></div>
+      <div class="stat-box"><div class="stat-label">Dönüşüm</div><div class="stat-val">${d.totalRegs ? Math.round(d.verifiedRegs/d.totalRegs*100) : 0}%</div><div class="stat-sub">Doğrulama oranı</div></div>
+    `;
+  }
+
+  async function loadRegs() {
+    allRegs = await apiFetch('/api/admin/registrations');
+    renderRegs(allRegs);
+    document.getElementById('regCount').textContent = `${allRegs.length} kayıt`;
+  }
+
+  function renderRegs(data) {
+    const tbody = document.getElementById('regTable');
+    if (!data.length) { tbody.innerHTML = '<tr><td colspan="9" class="empty">Henüz kayıt yok.</td></tr>'; return; }
+    tbody.innerHTML = data.map(r => `
+      <tr>
+        <td>${r.id}</td>
+        <td class="td-main">${esc(r.first_name)} ${esc(r.last_name)}</td>
+        <td><a href="mailto:${esc(r.email)}" style="color:#60a5fa;">${esc(r.email)}</a></td>
+        <td>${r.phone || '—'}</td>
+        <td class="td-main">${r.company || '—'}</td>
+        <td>${r.verified
+          ? `<span class="pill pill-green">✓ Doğrulandı</span>`
+          : `<span class="pill pill-yellow">⏳ Bekliyor</span>`}
+        </td>
+        <td><code style="font-size:11px;color:var(--dim);">${r.ip || '—'}</code></td>
+        <td>${fmtDate(r.created_at)}</td>
+        <td><button class="btn-del" onclick="delReg(${r.id})">Sil</button></td>
+      </tr>
+    `).join('');
+  }
+
+  function filterRegs() {
+    const q = document.getElementById('regSearch').value.toLowerCase();
+    renderRegs(allRegs.filter(r =>
+      `${r.first_name} ${r.last_name} ${r.email} ${r.company} ${r.phone}`.toLowerCase().includes(q)
+    ));
+  }
+
+  async function delReg(id) {
+    if (!confirm('Bu kaydı silmek istediğinizden emin misiniz?')) return;
+    await apiFetch(`/api/admin/registrations/${id}`, 'DELETE');
+    loadRegs();
+    loadStats();
+  }
+
+  async function loadVis() {
+    allVis = await apiFetch('/api/admin/visitors?limit=500');
+    renderVis(allVis);
+    document.getElementById('visCount').textContent = `${allVis.length} ziyaret (son 500)`;
+  }
+
+  function renderVis(data) {
+    const tbody = document.getElementById('visTable');
+    if (!data.length) { tbody.innerHTML = '<tr><td colspan="9" class="empty">Henüz ziyaretçi yok.</td></tr>'; return; }
+    tbody.innerHTML = data.map(v => `
+      <tr>
+        <td>${v.id}</td>
+        <td><code style="font-size:11px;color:var(--muted);">${v.ip || '—'}</code></td>
+        <td>${v.browser_name || '—'} ${v.browser_version ? `<span style="color:var(--dim);font-size:11px;">${v.browser_version.split('.')[0]}</span>` : ''}</td>
+        <td>${v.os_name || '—'} <span style="color:var(--dim);font-size:11px;">${v.os_version || ''}</span></td>
+        <td><span class="pill ${v.device_type === 'mobile' ? 'pill-blue' : v.device_type === 'tablet' ? 'pill-yellow' : 'pill-green'}">${v.device_type || 'desktop'}</span></td>
+        <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(v.page || '/')}</td>
+        <td>${v.language || '—'}</td>
+        <td style="font-size:11px;">${v.timezone || '—'}</td>
+        <td>${fmtDate(v.created_at)}</td>
+      </tr>
+    `).join('');
+  }
+
+  function filterVis() {
+    const q = document.getElementById('visSearch').value.toLowerCase();
+    renderVis(allVis.filter(v =>
+      `${v.ip} ${v.browser_name} ${v.os_name}`.toLowerCase().includes(q)
+    ));
+  }
+
+  async function loadAnalytics() {
+    const d = await apiFetch('/api/admin/analytics');
+    const grid = document.getElementById('analyticsGrid');
+
+    const sections = [
+      { title: '🌐 Tarayıcılar', data: d.browsers },
+      { title: '💻 İşletim Sistemleri', data: d.os },
+      { title: '📱 Cihaz Türü', data: d.devices },
+      { title: '🔗 Referans Kaynaklar', data: d.referrers },
+      { title: '🌍 Diller', data: d.languages },
+    ];
+
+    grid.innerHTML = sections.map(s => {
+      const max = s.data[0]?.cnt || 1;
+      return `
+        <div class="card" style="padding:22px;">
+          <div style="font-size:15px;font-weight:700;margin-bottom:18px;">${s.title}</div>
+          ${s.data.length ? s.data.map(item => `
+            <div class="bar-item">
+              <div class="bar-label" title="${esc(item.name || '(boş)')}">${esc(item.name || '(boş)')}</div>
+              <div class="bar-track"><div class="bar-fill" style="width:${Math.round(item.cnt/max*100)}%"></div></div>
+              <div class="bar-cnt">${item.cnt}</div>
+            </div>
+          `).join('') : '<div style="color:var(--dim);font-size:13px;">Veri yok</div>'}
+        </div>
+      `;
+    }).join('');
+
+    // Daily chart
+    if (d.daily?.length) {
+      const maxD = d.daily.reduce((m, x) => Math.max(m, x.cnt), 0) || 1;
+      grid.innerHTML += `
+        <div class="card" style="padding:22px;grid-column:1/-1;">
+          <div style="font-size:15px;font-weight:700;margin-bottom:18px;">📈 Günlük Ziyaret (Son 30 Gün)</div>
+          <div style="display:flex;align-items:flex-end;gap:6px;height:120px;overflow-x:auto;padding-bottom:8px;">
+            ${[...d.daily].reverse().map(day => `
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;min-width:28px;">
+                <div style="font-size:10px;color:var(--dim);">${day.cnt}</div>
+                <div style="width:100%;background:linear-gradient(135deg,#2563eb,#7c3aed);border-radius:4px 4px 0 0;height:${Math.round(day.cnt/maxD*90)}px;min-height:4px;" title="${day.day}: ${day.cnt} ziyaret"></div>
+                <div style="font-size:9px;color:var(--dim);writing-mode:vertical-lr;transform:rotate(180deg);">${day.day?.slice(5)}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  // ── UTILS ─────────────────────────────
+  async function apiFetch(url, method = 'GET') {
+    const sep = url.includes('?') ? '&' : '?';
+    const r = await fetch(`${url}${sep}key=${encodeURIComponent(ADMIN_KEY)}`, { method });
+    return r.json();
+  }
+
+  function esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function fmtDate(dt) {
+    if (!dt) return '—';
+    return new Date(dt).toLocaleString('tr-TR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+  }
+
+  function exportCSV(type) {
+    const data = type === 'regs' ? allRegs : allVis;
+    if (!data.length) return;
+    const keys = Object.keys(data[0]);
+    const csv = [keys.join(','), ...data.map(r => keys.map(k => `"${(r[k]||'').toString().replace(/"/g,'""')}"`).join(','))].join('\n');
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' }));
+    a.download = `ncmsoft_${type}_${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+  }
+</script>
+</body>
+</html>
