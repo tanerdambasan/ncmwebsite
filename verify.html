@@ -12,69 +12,48 @@
       background: #0a0f1e;
       color: #f1f5f9;
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px; overflow: hidden;
     }
-    .blob {
-      position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0;
-    }
+    .blob { position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0; }
     .card {
-      background: #1e293b;
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 24px;
-      padding: 56px 48px;
-      text-align: center;
-      max-width: 480px;
-      width: 100%;
-      position: relative;
-      z-index: 1;
-      box-shadow: 0 40px 80px rgba(0,0,0,0.4);
+      background: #1e293b; border: 1px solid rgba(255,255,255,0.08); border-radius: 24px;
+      padding: 48px 44px; text-align: center; max-width: 480px; width: 100%;
+      position: relative; z-index: 1; box-shadow: 0 40px 80px rgba(0,0,0,0.4);
     }
-    .icon { font-size: 72px; margin-bottom: 24px; display: block; }
-    h1 { font-size: 28px; font-weight: 800; margin-bottom: 14px; }
-    p { color: #94a3b8; font-size: 16px; line-height: 1.7; margin-bottom: 32px; }
+    .icon { font-size: 60px; margin-bottom: 18px; display: block; }
+    h1 { font-size: 26px; font-weight: 800; margin-bottom: 12px; }
+    p { color: #94a3b8; font-size: 15px; line-height: 1.7; margin-bottom: 26px; }
+    p strong { color: #f1f5f9; }
     .btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: linear-gradient(135deg, #2563eb, #7c3aed);
-      color: #fff; padding: 16px 40px; border-radius: 10px;
-      font-weight: 700; font-size: 16px; text-decoration: none;
-      box-shadow: 0 4px 20px rgba(37,99,235,0.4);
-      transition: all .25s;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
+      background: linear-gradient(135deg, #2563eb, #7c3aed); color: #fff; padding: 15px 28px;
+      border: none; border-radius: 10px; font-weight: 700; font-size: 16px; text-decoration: none;
+      box-shadow: 0 4px 20px rgba(37,99,235,0.4); transition: all .25s; cursor: pointer;
     }
-    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(37,99,235,0.5); }
-    .btn-ghost {
-      display: inline-flex; align-items: center; gap: 6px;
-      color: #64748b; font-size: 14px; text-decoration: none;
-      margin-top: 16px; transition: color .2s;
+    .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(37,99,235,0.5); }
+    .btn:disabled { opacity: .55; cursor: not-allowed; }
+    .btn-ghost { display:inline-block; color:#64748b; font-size:14px; text-decoration:none; margin-top:16px; background:none; border:none; cursor:pointer; }
+    .btn-ghost:hover { color:#94a3b8; }
+    .logo-row { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:32px; }
+    .logo-icon { width:40px; height:40px; background:linear-gradient(135deg,#2563eb,#7c3aed); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:900; color:#fff; }
+    .logo-text { font-size:20px; font-weight:800; }
+    .logo-text span { color:#60a5fa; }
+    .code-inputs { display:flex; gap:10px; justify-content:center; margin: 8px 0 22px; }
+    .code-inputs input {
+      width: 52px; height: 62px; text-align:center; font-size:28px; font-weight:800;
+      background:#0f172a; border:1px solid rgba(255,255,255,0.12); border-radius:12px; color:#f1f5f9;
+      outline:none; transition: border-color .15s, box-shadow .15s;
     }
-    .btn-ghost:hover { color: #94a3b8; }
-    .logo-row {
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-      margin-bottom: 40px;
-    }
-    .logo-icon {
-      width: 40px; height: 40px;
-      background: linear-gradient(135deg, #2563eb, #7c3aed);
-      border-radius: 10px; display: flex; align-items: center; justify-content: center;
-      font-size: 18px; font-weight: 900; color: #fff;
-    }
-    .logo-text { font-size: 20px; font-weight: 800; }
-    .logo-text span { color: #60a5fa; }
-    .divider { height: 1px; background: rgba(255,255,255,0.07); margin: 28px 0; }
-    .info-box {
-      background: rgba(37,99,235,0.08);
-      border: 1px solid rgba(37,99,235,0.2);
-      border-radius: 10px; padding: 14px 20px;
-      font-size: 13px; color: #93c5fd; line-height: 1.6;
-      margin-bottom: 28px; text-align: left;
-    }
-    .countdown {
-      font-size: 13px; color: #475569; margin-top: 8px;
-    }
-    #timer { color: #60a5fa; font-weight: 700; }
+    .code-inputs input:focus { border-color:#2563eb; box-shadow:0 0 0 3px rgba(37,99,235,0.25); }
+    .msg { font-size:13px; line-height:1.6; margin: 4px 0 18px; min-height: 18px; }
+    .msg.error { color:#f87171; }
+    .msg.ok { color:#34d399; }
+    .resend { font-size:13px; color:#64748b; margin-top:18px; }
+    .resend button { background:none; border:none; color:#60a5fa; font-weight:700; cursor:pointer; font-size:13px; }
+    .resend button:disabled { color:#475569; cursor:not-allowed; }
+    .info-box { background:rgba(37,99,235,0.08); border:1px solid rgba(37,99,235,0.2); border-radius:10px; padding:14px 20px; font-size:13px; color:#93c5fd; line-height:1.6; margin-bottom:24px; text-align:left; }
+    #timer { color:#60a5fa; font-weight:700; }
   </style>
 </head>
 <body>
@@ -92,47 +71,143 @@
   <script>
     const params = new URLSearchParams(location.search);
     const status = params.get('status');
+    const email  = (params.get('email') || '').toLowerCase();
     const name   = params.get('name') || '';
     const card   = document.getElementById('card');
-
     const DEMO_URL = 'http://portal.ncmteknoloji.com';
+    function esc(s) {
+      return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    }
 
+    // ── LEGACY: link tabanlı doğrulama sonucu (?status=...) ────────────────
     if (status === 'success') {
-      card.innerHTML += `
-        <span class="icon">🎉</span>
-        <h1>E-posta Doğrulandı!</h1>
-        <p>Merhaba <strong style="color:#f1f5f9;">${decodeURIComponent(name)}</strong>, e-posta adresiniz başarıyla doğrulandı.<br>NCMSoft demo platformuna erişebilirsiniz.</p>
-        <div class="info-box">
-          🚀 Demo portala yönlendiriliyorsunuz...<br>
-          Otomatik yönlendirme: <strong id="timer">5</strong> saniye
-        </div>
-        <a href="${DEMO_URL}" class="btn">🚀 Demo Portala Git</a>
-        <br>
-        <a href="/" class="btn-ghost">← Ana Sayfaya Dön</a>
-      `;
-
-      let secs = 5;
-      const t = setInterval(() => {
-        secs--;
-        const el = document.getElementById('timer');
-        if (el) el.textContent = secs;
-        if (secs <= 0) { clearInterval(t); location.href = DEMO_URL; }
-      }, 1000);
-
+      renderLegacySuccess(name);
     } else if (status === 'invalid') {
-      card.innerHTML += `
+      card.insertAdjacentHTML('beforeend', `
         <span class="icon">❌</span>
         <h1>Geçersiz Bağlantı</h1>
         <p>Bu doğrulama bağlantısı geçerli değil veya süresi dolmuş.<br>Lütfen ana sayfadan yeniden kayıt olun.</p>
-        <a href="/" class="btn">← Ana Sayfaya Dön</a>
-      `;
+        <a href="/" class="btn">← Ana Sayfaya Dön</a>`);
+    } else if (status === 'legacy_disabled') {
+      renderPendingApproval('Bu doğrulama bağlantısı eski akışa aittir. Lütfen ana sayfadan yeni doğrulama kodu isteyin.');
+    } else if (email) {
+      renderCodeForm();
     } else {
-      card.innerHTML += `
+      card.insertAdjacentHTML('beforeend', `
         <span class="icon">🔗</span>
-        <h1>Sayfa Bulunamadı</h1>
-        <p>Geçersiz bir URL'e geldiniz.</p>
-        <a href="/" class="btn">← Ana Sayfaya Dön</a>
-      `;
+        <h1>Doğrulama</h1>
+        <p>Doğrulama için lütfen ana sayfadan demo talebi oluşturun.</p>
+        <a href="/" class="btn">← Ana Sayfaya Dön</a>`);
+    }
+
+    // ── KOD GİRİŞ EKRANI ───────────────────────────────────────────────────
+    function renderCodeForm() {
+      card.insertAdjacentHTML('beforeend', `
+        <span class="icon">✉️</span>
+        <h1>E-postanızı Doğrulayın</h1>
+        <p><strong>${esc(email)}</strong> adresine gönderdiğimiz 6 haneli kodu girin.</p>
+        <div class="code-inputs" id="codeInputs">
+          ${Array.from({length:6}).map((_,i)=>`<input inputmode="numeric" maxlength="1" data-i="${i}" autocomplete="one-time-code" />`).join('')}
+        </div>
+        <div class="msg" id="msg"></div>
+        <button class="btn" id="verifyBtn" disabled>Doğrula ve Devam Et →</button>
+        <div class="resend">Kod gelmedi mi? <button id="resendBtn">Yeniden gönder</button> <span id="resendTimer"></span></div>
+      `);
+
+      const inputs = Array.from(document.querySelectorAll('#codeInputs input'));
+      const btn = document.getElementById('verifyBtn');
+      const msg = document.getElementById('msg');
+
+      function code() { return inputs.map(i => i.value).join(''); }
+      function refresh() { btn.disabled = code().length !== 6; }
+
+      inputs.forEach((inp, idx) => {
+        inp.addEventListener('input', () => {
+          inp.value = inp.value.replace(/\D/g, '').slice(0,1);
+          if (inp.value && idx < 5) inputs[idx+1].focus();
+          refresh();
+        });
+        inp.addEventListener('keydown', (e) => {
+          if (e.key === 'Backspace' && !inp.value && idx > 0) inputs[idx-1].focus();
+          if (e.key === 'Enter' && code().length === 6) submit();
+        });
+        inp.addEventListener('paste', (e) => {
+          const t = (e.clipboardData.getData('text') || '').replace(/\D/g,'').slice(0,6);
+          if (t) { e.preventDefault(); t.split('').forEach((c,i)=>{ if(inputs[i]) inputs[i].value=c; }); refresh(); inputs[Math.min(t.length,5)].focus(); }
+        });
+      });
+      inputs[0].focus();
+
+      btn.addEventListener('click', submit);
+
+      async function submit() {
+        btn.disabled = true; msg.className='msg'; msg.textContent='Doğrulanıyor...';
+        try {
+          const res = await fetch('/api/verify-code', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ email, code: code() })
+          });
+          const data = await res.json();
+          if (data.ok && data.onboardToken) {
+            msg.className='msg ok'; msg.textContent='Doğrulandı! Kuruluma yönlendiriliyorsunuz...';
+            location.href = data.next || (`/onboard.html?token=${data.onboardToken}&email=${encodeURIComponent(email)}`);
+          } else if (data.ok && data.alreadyProvisioned) {
+            renderPendingApproval(data.message || 'Demo kurulumunuz oluşturulmuş ve yönetici onayı bekliyor.');
+          } else {
+            msg.className='msg error'; msg.textContent = data.error || 'Kod doğrulanamadı.';
+            inputs.forEach(i=>i.value=''); inputs[0].focus(); refresh();
+          }
+        } catch {
+          msg.className='msg error'; msg.textContent='Bağlantı hatası. Lütfen tekrar deneyin.';
+          refresh();
+        }
+      }
+
+      // Resend + geri sayım
+      const resendBtn = document.getElementById('resendBtn');
+      const resendTimer = document.getElementById('resendTimer');
+      let cooldown = 0;
+      function startCooldown(secs) {
+        cooldown = secs; resendBtn.disabled = true;
+        const t = setInterval(() => {
+          cooldown--; resendTimer.textContent = cooldown>0 ? `(${cooldown}s)` : '';
+          if (cooldown<=0) { clearInterval(t); resendBtn.disabled=false; }
+        }, 1000);
+      }
+      startCooldown(30);
+      resendBtn.addEventListener('click', async () => {
+        resendBtn.disabled = true; msg.className='msg'; msg.textContent='Yeni kod gönderiliyor...';
+        try {
+          const res = await fetch('/api/resend-code', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email }) });
+          const data = await res.json();
+          if (data.ok) { msg.className='msg ok'; msg.textContent='Yeni kod gönderildi. Gelen kutunuzu kontrol edin.'; startCooldown(30); }
+          else { msg.className='msg error'; msg.textContent = data.error || 'Kod gönderilemedi.'; resendBtn.disabled=false; }
+        } catch { msg.className='msg error'; msg.textContent='Bağlantı hatası.'; resendBtn.disabled=false; }
+      });
+    }
+
+    function renderLegacySuccess(nm) {
+      card.insertAdjacentHTML('beforeend', `
+        <span class="icon">🎉</span>
+        <h1>E-posta Doğrulandı!</h1>
+        <p>Merhaba <strong>${esc(decodeURIComponent(nm))}</strong>, e-posta adresiniz doğrulandı.</p>
+        <div class="info-box">🚀 Demo portala yönlendiriliyorsunuz...<br>Otomatik yönlendirme: <strong id="timer">5</strong> saniye</div>
+        <a href="${DEMO_URL}" class="btn">🚀 Demo Portala Git</a>
+        <button class="btn-ghost" onclick="location.href='/'">← Ana Sayfaya Dön</button>`);
+      let secs = 5;
+      const t = setInterval(() => { secs--; const el=document.getElementById('timer'); if(el) el.textContent=secs; if(secs<=0){clearInterval(t); location.href=DEMO_URL;} }, 1000);
+    }
+
+    function renderPendingApproval(message) {
+      card.innerHTML = `
+        <div class="logo-row">
+          <div class="logo-icon">N</div>
+          <div class="logo-text">NCM<span>SOFT</span></div>
+        </div>
+        <span class="icon">⏳</span>
+        <h1>Onay Bekleniyor</h1>
+        <p>${esc(message)}<br>Onay tamamlandığında giriş yapabilirsiniz.</p>
+        <button class="btn-ghost" onclick="location.href='/'">← Ana Sayfaya Dön</button>`;
     }
   </script>
 </body>

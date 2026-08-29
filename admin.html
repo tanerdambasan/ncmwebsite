@@ -257,8 +257,14 @@
   let allRegs = [], allVis = [];
 
   // ── LOGIN ─────────────────────────────
+  const urlKey = new URLSearchParams(location.search).get('key');
   const savedKey = sessionStorage.getItem('ncm_admin_key');
-  if (savedKey) tryKey(savedKey);
+  if (urlKey) {
+    history.replaceState(null, '', location.pathname);
+    tryKey(urlKey);
+  } else if (savedKey) {
+    tryKey(savedKey);
+  }
 
   function doLogin() {
     const key = document.getElementById('loginKey').value.trim();
@@ -268,16 +274,12 @@
 
   async function tryKey(key) {
     try {
-      const r = await fetch(`/api/admin/stats?key=${encodeURIComponent(key)}`);
-      if (r.ok) {
-        ADMIN_KEY = key;
-        sessionStorage.setItem('ncm_admin_key', key);
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('app').style.display = 'block';
-        loadAll();
-      } else {
-        document.getElementById('loginError').style.display = 'block';
-      }
+      await apiFetch('/api/admin/stats', 'GET', key);
+      ADMIN_KEY = key;
+      sessionStorage.setItem('ncm_admin_key', key);
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      loadAll();
     } catch {
       document.getElementById('loginError').style.display = 'block';
     }
@@ -303,6 +305,7 @@
       <div class="stat-box"><div class="stat-label">Bugün Ziyaret</div><div class="stat-val" style="color:#60a5fa;">${d.todayVisitors}</div><div class="stat-sub">Bugün kaydedilen</div></div>
       <div class="stat-box"><div class="stat-label">Toplam Kayıt</div><div class="stat-val" style="color:#a78bfa;">${d.totalRegs}</div><div class="stat-sub">Demo talebi</div></div>
       <div class="stat-box"><div class="stat-label">Doğrulanmış</div><div class="stat-val" style="color:#34d399;">${d.verifiedRegs}</div><div class="stat-sub">E-posta onaylı</div></div>
+      <div class="stat-box"><div class="stat-label">Kurulmuş</div><div class="stat-val" style="color:#fbbf24;">${d.provisionedRegs || 0}</div><div class="stat-sub">ERP onayı bekleyen</div></div>
       <div class="stat-box"><div class="stat-label">Bugün Kayıt</div><div class="stat-val" style="color:#fbbf24;">${d.todayRegs}</div><div class="stat-sub">Yeni demo talebi</div></div>
       <div class="stat-box"><div class="stat-label">Dönüşüm</div><div class="stat-val">${d.totalRegs ? Math.round(d.verifiedRegs/d.totalRegs*100) : 0}%</div><div class="stat-sub">Doğrulama oranı</div></div>
     `;
@@ -325,7 +328,9 @@
         <td>${r.phone || '—'}</td>
         <td class="td-main">${r.company || '—'}</td>
         <td>${r.verified
-          ? `<span class="pill pill-green">✓ Doğrulandı</span>`
+          ? r.provisioned
+            ? `<span class="pill pill-blue">ERP Onayı Bekliyor</span>`
+            : `<span class="pill pill-green">✓ Doğrulandı</span>`
           : `<span class="pill pill-yellow">⏳ Bekliyor</span>`}
         </td>
         <td><code style="font-size:11px;color:var(--dim);">${r.ip || '—'}</code></td>
@@ -429,9 +434,17 @@
   }
 
   // ── UTILS ─────────────────────────────
-  async function apiFetch(url, method = 'GET') {
-    const sep = url.includes('?') ? '&' : '?';
-    const r = await fetch(`${url}${sep}key=${encodeURIComponent(ADMIN_KEY)}`, { method });
+  async function apiFetch(url, method = 'GET', keyOverride = '') {
+    const key = keyOverride || ADMIN_KEY;
+    const r = await fetch(url, {
+      method,
+      headers: { 'x-admin-key': key },
+    });
+    if (!r.ok) {
+      const error = new Error('API isteği başarısız.');
+      error.status = r.status;
+      throw error;
+    }
     return r.json();
   }
 

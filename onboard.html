@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NCMSoft — Sistem Kurulumu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family:'Inter',sans-serif; background:#0a0f1e; color:#f1f5f9; min-height:100vh; display:flex; align-items:flex-start; justify-content:center; padding:32px 20px; }
+    .blob { position:fixed; border-radius:50%; filter:blur(120px); pointer-events:none; z-index:0; }
+    .wrap { width:100%; max-width:620px; position:relative; z-index:1; }
+    .logo-row { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:24px; }
+    .logo-icon { width:40px; height:40px; background:linear-gradient(135deg,#2563eb,#7c3aed); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:900; color:#fff; }
+    .logo-text { font-size:20px; font-weight:800; }
+    .logo-text span { color:#60a5fa; }
+    .card { background:#1e293b; border:1px solid rgba(255,255,255,0.08); border-radius:20px; padding:36px 34px; box-shadow:0 40px 80px rgba(0,0,0,0.4); }
+    /* Stepper */
+    .steps { display:flex; align-items:center; justify-content:space-between; margin-bottom:30px; }
+    .step { display:flex; flex-direction:column; align-items:center; gap:6px; flex:1; position:relative; }
+    .step .dot { width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px; background:#0f172a; border:2px solid rgba(255,255,255,0.12); color:#64748b; transition:all .25s; }
+    .step .lbl { font-size:11px; color:#64748b; text-align:center; font-weight:600; }
+    .step.active .dot { background:linear-gradient(135deg,#2563eb,#7c3aed); border-color:transparent; color:#fff; }
+    .step.done .dot { background:#0f172a; border-color:#2563eb; color:#60a5fa; }
+    .step.active .lbl, .step.done .lbl { color:#cbd5e1; }
+    .step::after { content:''; position:absolute; top:17px; left:calc(50% + 22px); right:calc(-50% + 22px); height:2px; background:rgba(255,255,255,0.1); z-index:-0; }
+    .step:last-child::after { display:none; }
+    .step.done::after { background:#2563eb; }
+    h2 { font-size:22px; font-weight:800; margin-bottom:6px; }
+    .sub { color:#94a3b8; font-size:14px; line-height:1.6; margin-bottom:24px; }
+    .form-group { margin-bottom:18px; }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    label { display:block; font-size:13px; font-weight:600; color:#cbd5e1; margin-bottom:7px; }
+    label .req { color:#f87171; }
+    label .hint { color:#64748b; font-weight:400; font-size:12px; }
+    input, select { width:100%; padding:12px 14px; background:#0f172a; border:1px solid rgba(255,255,255,0.12); border-radius:10px; color:#f1f5f9; font-size:14px; font-family:inherit; outline:none; transition:border-color .15s, box-shadow .15s; }
+    input:focus, select:focus { border-color:#2563eb; box-shadow:0 0 0 3px rgba(37,99,235,0.22); }
+    input::placeholder { color:#475569; }
+    .code-preview { font-family:monospace; color:#60a5fa; font-size:12px; margin-top:6px; }
+    .msg { font-size:13px; line-height:1.6; margin:2px 0 14px; min-height:16px; }
+    .msg.error { color:#f87171; } .msg.ok { color:#34d399; }
+    .actions { display:flex; gap:12px; margin-top:26px; }
+    .btn { flex:1; display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:14px 20px; border:none; border-radius:10px; font-weight:700; font-size:15px; cursor:pointer; text-decoration:none; transition:all .2s; }
+    .btn-primary { background:linear-gradient(135deg,#2563eb,#7c3aed); color:#fff; box-shadow:0 4px 20px rgba(37,99,235,0.4); }
+    .btn-primary:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 8px 30px rgba(37,99,235,0.5); }
+    .btn-primary:disabled { opacity:.55; cursor:not-allowed; }
+    .btn-ghost { background:#0f172a; color:#94a3b8; border:1px solid rgba(255,255,255,0.1); flex:0 0 auto; padding:14px 22px; }
+    .btn-ghost:hover { color:#f1f5f9; }
+    .summary { background:#0f172a; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:20px; }
+    .summary h3 { font-size:12px; text-transform:uppercase; letter-spacing:1px; color:#64748b; margin:0 0 12px; }
+    .summary h3:not(:first-child){ margin-top:20px; }
+    .summary table { width:100%; border-collapse:collapse; }
+    .summary td { padding:7px 0; font-size:13px; border-bottom:1px solid rgba(255,255,255,0.05); }
+    .summary td:first-child { color:#64748b; width:44%; }
+    .summary td:last-child { color:#f1f5f9; font-weight:600; text-align:right; }
+    .center { text-align:center; }
+    .center .big { font-size:60px; margin-bottom:14px; }
+    .cred-box { background:#0f172a; border:1px solid rgba(37,99,235,0.4); border-radius:12px; padding:20px; margin:22px 0; text-align:left; }
+    .cred-box td:first-child { color:#64748b; }
+    .cred-box td:last-child { color:#93c5fd; font-family:monospace; font-weight:700; }
+    .hidden { display:none; }
+    @media (max-width:520px){ .form-row{grid-template-columns:1fr;} .step .lbl{display:none;} }
+  </style>
+</head>
+<body>
+  <div class="blob" style="width:500px;height:500px;background:rgba(37,99,235,0.2);top:-120px;left:-200px;"></div>
+  <div class="blob" style="width:420px;height:420px;background:rgba(139,92,246,0.15);bottom:-120px;right:-180px;"></div>
+
+  <div class="wrap">
+    <div class="logo-row">
+      <div class="logo-icon">N</div>
+      <div class="logo-text">NCM<span>SOFT</span></div>
+    </div>
+
+    <div class="card" id="card">
+      <div class="steps" id="stepper">
+        <div class="step" data-step="1"><div class="dot">1</div><div class="lbl">Kuruluş</div></div>
+        <div class="step" data-step="2"><div class="dot">2</div><div class="lbl">Şirket</div></div>
+        <div class="step" data-step="3"><div class="dot">3</div><div class="lbl">Yönetici</div></div>
+        <div class="step" data-step="4"><div class="dot">4</div><div class="lbl">Özet</div></div>
+      </div>
+
+      <div id="stepBody"><p class="sub">Yükleniyor…</p></div>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const token = params.get('token') || '';
+    const DEMO_URL = 'http://portal.ncmteknoloji.com';
+
+    const state = {
+      tenantName:'', tenantCode:'', tenantCodeTouched:false,
+      companyTitle:'', companyCode:'', companyCodeTouched:false,
+      taxNumber:'', countryCode:'TR', currencyCode:'TRY', timeZone:'Europe/Istanbul',
+      adminFullName:'', adminEmail:'', adminPhone:'', adminPassword:'', adminPassword2:'',
+    };
+    let current = 1;
+
+    // Backend normalizeCode ile birebir aynı mantık.
+    function normCode(v, max=40){
+      var map={'ç':'c','ğ':'g','ı':'i','ö':'o','ş':'s','ü':'u','Ç':'C','Ğ':'G','İ':'I','Ö':'O','Ş':'S','Ü':'U'};
+      return String(v||'').trim().replace(/[çğıöşüÇĞİÖŞÜ]/g,function(c){return map[c]||c;})
+        .toUpperCase().replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'').slice(0,max);
+    }
+    function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+    const stepBody = document.getElementById('stepBody');
+
+    function renderStepper(){
+      document.querySelectorAll('#stepper .step').forEach(el=>{
+        const n = Number(el.dataset.step);
+        el.classList.toggle('active', n===current);
+        el.classList.toggle('done', n<current);
+        el.querySelector('.dot').textContent = n<current ? '✓' : n;
+      });
+    }
+
+    function go(n){ current=n; renderStepper(); render(); window.scrollTo(0,0); }
+
+    function render(){
+      if (current===1) renderTenant();
+      else if (current===2) renderCompany();
+      else if (current===3) renderAdmin();
+      else renderSummary();
+    }
+
+    // ── ADIM 1: Kuruluş / Tenant ──────────────────────────────────────────
+    function renderTenant(){
+      stepBody.innerHTML = `
+        <h2>Kuruluş Bilgileri</h2>
+        <p class="sub">Sisteminizin en üst kuruluş (tenant) tanımını girin. Bir kuruluş altında birden fazla şirket olabilir.</p>
+        <div class="form-group">
+          <label>Kuruluş / Grup Adı <span class="req">*</span></label>
+          <input id="tenantName" placeholder="Örn. NCM Lojistik Grubu" value="${esc(state.tenantName)}" />
+        </div>
+        <div class="form-group">
+          <label>Kuruluş Kodu <span class="req">*</span> <span class="hint">(otomatik)</span></label>
+          <input id="tenantCode" placeholder="NCM_LOJISTIK_GRUBU" value="${esc(state.tenantCode)}" />
+          <div class="code-preview" id="tenantCodePrev"></div>
+        </div>
+        <div class="msg error" id="msg"></div>
+        <div class="actions">
+          <a href="/" class="btn btn-ghost">İptal</a>
+          <button class="btn btn-primary" id="next">Devam →</button>
+        </div>`;
+      const nameEl = document.getElementById('tenantName');
+      const codeEl = document.getElementById('tenantCode');
+      const prev = document.getElementById('tenantCodePrev');
+      const syncPrev = ()=>{ prev.textContent = codeEl.value ? 'Kod: '+normCode(codeEl.value) : ''; };
+      nameEl.addEventListener('input', ()=>{ state.tenantName=nameEl.value; if(!state.tenantCodeTouched){ codeEl.value=normCode(nameEl.value); syncPrev(); }});
+      codeEl.addEventListener('input', ()=>{ state.tenantCodeTouched=true; syncPrev(); });
+      syncPrev();
+      document.getElementById('next').onclick = ()=>{
+        state.tenantName = nameEl.value.trim();
+        state.tenantCode = normCode(codeEl.value);
+        const msg = document.getElementById('msg');
+        if(!state.tenantName){ msg.textContent='Kuruluş adı zorunludur.'; return; }
+        if(!state.tenantCode){ msg.textContent='Geçerli bir kuruluş kodu girin.'; return; }
+        go(2);
+      };
+      nameEl.focus();
+    }
+
+    // ── ADIM 2: Şirket / Company ──────────────────────────────────────────
+    function renderCompany(){
+      const opt = (v,l,sel)=>`<option value="${v}" ${sel===v?'selected':''}>${l}</option>`;
+      stepBody.innerHTML = `
+        <h2>Şirket Bilgileri</h2>
+        <p class="sub">Faturalama ve operasyonların yürütüleceği tüzel şirketi tanımlayın.</p>
+        <div class="form-group">
+          <label>Şirket Ünvanı <span class="req">*</span></label>
+          <input id="companyTitle" placeholder="Örn. NCM Lojistik A.Ş." value="${esc(state.companyTitle)}" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Şirket Kodu <span class="req">*</span> <span class="hint">(otomatik)</span></label>
+            <input id="companyCode" placeholder="NCM_LOJISTIK_AS" value="${esc(state.companyCode)}" />
+            <div class="code-preview" id="companyCodePrev"></div>
+          </div>
+          <div class="form-group">
+            <label>VKN / TCKN</label>
+            <input id="taxNumber" inputmode="numeric" maxlength="11" placeholder="1234567890" value="${esc(state.taxNumber)}" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Ülke</label>
+            <select id="countryCode">${opt('TR','Türkiye (TR)',state.countryCode)}${opt('AZ','Azerbaycan (AZ)',state.countryCode)}${opt('DE','Almanya (DE)',state.countryCode)}${opt('US','ABD (US)',state.countryCode)}</select>
+          </div>
+          <div class="form-group">
+            <label>Para Birimi</label>
+            <select id="currencyCode">${opt('TRY','TRY ₺',state.currencyCode)}${opt('USD','USD $',state.currencyCode)}${opt('EUR','EUR €',state.currencyCode)}${opt('AZN','AZN ₼',state.currencyCode)}</select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Saat Dilimi</label>
+          <select id="timeZone">
+            ${opt('Europe/Istanbul','Europe/Istanbul (GMT+3)',state.timeZone)}
+            ${opt('Asia/Baku','Asia/Baku (GMT+4)',state.timeZone)}
+            ${opt('Europe/Berlin','Europe/Berlin (GMT+1)',state.timeZone)}
+            ${opt('UTC','UTC',state.timeZone)}
+          </select>
+        </div>
+        <div class="msg error" id="msg"></div>
+        <div class="actions">
+          <button class="btn btn-ghost" id="back">← Geri</button>
+          <button class="btn btn-primary" id="next">Devam →</button>
+        </div>`;
+      const titleEl = document.getElementById('companyTitle');
+      const codeEl = document.getElementById('companyCode');
+      const prev = document.getElementById('companyCodePrev');
+      const syncPrev = ()=>{ prev.textContent = codeEl.value ? 'Kod: '+normCode(codeEl.value) : ''; };
+      titleEl.addEventListener('input', ()=>{ if(!state.companyCodeTouched){ codeEl.value=normCode(titleEl.value); syncPrev(); }});
+      codeEl.addEventListener('input', ()=>{ state.companyCodeTouched=true; syncPrev(); });
+      document.getElementById('taxNumber').addEventListener('input', e=>{ e.target.value=e.target.value.replace(/\D/g,'').slice(0,11); });
+      syncPrev();
+      document.getElementById('back').onclick = ()=>{ saveCompany(); go(1); };
+      document.getElementById('next').onclick = ()=>{
+        saveCompany();
+        const msg = document.getElementById('msg');
+        if(!state.companyTitle){ msg.textContent='Şirket ünvanı zorunludur.'; return; }
+        if(!state.companyCode){ msg.textContent='Geçerli bir şirket kodu girin.'; return; }
+        if(state.taxNumber && !/^\d{10,11}$/.test(state.taxNumber)){ msg.textContent='VKN 10, TCKN 11 haneli olmalıdır.'; return; }
+        go(3);
+      };
+      titleEl.focus();
+      function saveCompany(){
+        state.companyTitle = titleEl.value.trim();
+        state.companyCode = normCode(codeEl.value);
+        state.taxNumber = document.getElementById('taxNumber').value.trim();
+        state.countryCode = document.getElementById('countryCode').value;
+        state.currencyCode = document.getElementById('currencyCode').value;
+        state.timeZone = document.getElementById('timeZone').value;
+      }
+    }
+
+    // ── ADIM 3: Yönetici kullanıcı ────────────────────────────────────────
+    function renderAdmin(){
+      stepBody.innerHTML = `
+        <h2>Yönetici Hesabı</h2>
+        <p class="sub">Sisteme tam yetkiyle giriş yapacak yönetici kullanıcıyı oluşturun.</p>
+        <div class="form-group">
+          <label>Ad Soyad <span class="req">*</span></label>
+          <input id="adminFullName" placeholder="Ad Soyad" value="${esc(state.adminFullName)}" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>E-posta <span class="req">*</span></label>
+            <input id="adminEmail" type="email" placeholder="yonetici@firma.com" value="${esc(state.adminEmail)}" />
+          </div>
+          <div class="form-group">
+            <label>Telefon</label>
+            <input id="adminPhone" type="tel" placeholder="+90 5XX XXX XXXX" value="${esc(state.adminPhone)}" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Şifre <span class="req">*</span> <span class="hint">(min 6)</span></label>
+            <input id="adminPassword" type="password" placeholder="••••••••" value="${esc(state.adminPassword)}" />
+          </div>
+          <div class="form-group">
+            <label>Şifre (Tekrar) <span class="req">*</span></label>
+            <input id="adminPassword2" type="password" placeholder="••••••••" value="${esc(state.adminPassword2)}" />
+          </div>
+        </div>
+        <div class="msg error" id="msg"></div>
+        <div class="actions">
+          <button class="btn btn-ghost" id="back">← Geri</button>
+          <button class="btn btn-primary" id="next">Devam →</button>
+        </div>`;
+      const save = ()=>{
+        state.adminFullName = document.getElementById('adminFullName').value.trim();
+        state.adminEmail = document.getElementById('adminEmail').value.trim().toLowerCase();
+        state.adminPhone = document.getElementById('adminPhone').value.trim();
+        state.adminPassword = document.getElementById('adminPassword').value;
+        state.adminPassword2 = document.getElementById('adminPassword2').value;
+      };
+      document.getElementById('back').onclick = ()=>{ save(); go(2); };
+      document.getElementById('next').onclick = ()=>{
+        save();
+        const msg = document.getElementById('msg');
+        if(!state.adminFullName){ msg.textContent='Ad soyad zorunludur.'; return; }
+        if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(state.adminEmail)){ msg.textContent='Geçerli bir e-posta girin.'; return; }
+        if((state.adminPassword||'').length < 6){ msg.textContent='Şifre en az 6 karakter olmalıdır.'; return; }
+        if(state.adminPassword !== state.adminPassword2){ msg.textContent='Şifreler eşleşmiyor.'; return; }
+        go(4);
+      };
+      document.getElementById('adminFullName').focus();
+    }
+
+    // ── ADIM 4: Özet + Kur ────────────────────────────────────────────────
+    function renderSummary(){
+      stepBody.innerHTML = `
+        <h2>Özet & Onay</h2>
+        <p class="sub">Bilgileri kontrol edin ve kurulumu tamamlayın. Bu işlem kuruluş, şirket ve yönetici kullanıcıyı oluşturur.</p>
+        <div class="summary">
+          <h3>Kuruluş</h3>
+          <table><tr><td>Kuruluş Adı</td><td>${esc(state.tenantName)}</td></tr>
+            <tr><td>Kuruluş Kodu</td><td>${esc(state.tenantCode)}</td></tr></table>
+          <h3>Şirket</h3>
+          <table><tr><td>Ünvan</td><td>${esc(state.companyTitle)}</td></tr>
+            <tr><td>Kod</td><td>${esc(state.companyCode)}</td></tr>
+            <tr><td>VKN/TCKN</td><td>${esc(state.taxNumber||'—')}</td></tr>
+            <tr><td>Ülke / Para</td><td>${esc(state.countryCode)} / ${esc(state.currencyCode)}</td></tr>
+            <tr><td>Saat Dilimi</td><td>${esc(state.timeZone)}</td></tr></table>
+          <h3>Yönetici</h3>
+          <table><tr><td>Ad Soyad</td><td>${esc(state.adminFullName)}</td></tr>
+            <tr><td>E-posta</td><td>${esc(state.adminEmail)}</td></tr>
+            <tr><td>Telefon</td><td>${esc(state.adminPhone||'—')}</td></tr></table>
+        </div>
+        <div class="msg error" id="msg" style="margin-top:16px;"></div>
+        <div class="actions">
+          <button class="btn btn-ghost" id="back">← Geri</button>
+          <button class="btn btn-primary" id="submit">🚀 Sistemi Kur</button>
+        </div>`;
+      document.getElementById('back').onclick = ()=> go(3);
+      document.getElementById('submit').onclick = submitOnboard;
+    }
+
+    async function submitOnboard(){
+      const btn = document.getElementById('submit');
+      const msg = document.getElementById('msg');
+      btn.disabled = true; msg.className='msg ok'; msg.textContent='Kurulum yapılıyor, lütfen bekleyin…';
+      try {
+        const res = await fetch('/api/onboard', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({
+            token,
+            tenantName: state.tenantName, tenantCode: state.tenantCode,
+            companyTitle: state.companyTitle, companyCode: state.companyCode,
+            taxNumber: state.taxNumber, countryCode: state.countryCode,
+            currencyCode: state.currencyCode, timeZone: state.timeZone,
+            adminFullName: state.adminFullName, adminEmail: state.adminEmail,
+            adminPhone: state.adminPhone, adminPassword: state.adminPassword, adminLanguage:'tr',
+          })
+        });
+        const data = await res.json();
+        if (data.ok) { renderDone(data); }
+        else { msg.className='msg error'; msg.textContent = data.error || 'Kurulum başarısız oldu.'; btn.disabled=false; }
+      } catch {
+        msg.className='msg error'; msg.textContent='Bağlantı hatası. Lütfen tekrar deneyin.'; btn.disabled=false;
+      }
+    }
+
+    function renderDone(data){
+      document.getElementById('stepper').classList.add('hidden');
+      const pending = data.pendingApproval !== false; // demo akışında varsayılan: onay bekliyor
+      stepBody.innerHTML = `
+        <div class="center">
+          <div class="big">${pending ? '⏳' : '🎉'}</div>
+          <h2>${pending ? 'Kaydınız Onaya Gönderildi' : 'Sisteminiz Hazır!'}</h2>
+          <p class="sub">${esc(state.companyTitle)} için kurulum tamamlandı.
+            ${pending
+              ? 'Hesabınız güvenlik gereği <strong style="color:#f1f5f9;">yönetici (süper admin) onayına</strong> gönderildi. Onaylandıktan sonra aşağıdaki bilgilerle giriş yapabilirsiniz.'
+              : 'Aşağıdaki bilgilerle giriş yapabilirsiniz.'}
+          </p>
+          <div class="cred-box">
+            <table style="width:100%;border-collapse:collapse;">
+              <tr><td style="padding:8px 0;font-size:13px;">Yönetici E-posta</td><td style="padding:8px 0;font-size:14px;text-align:right;">${esc(data.adminEmail||state.adminEmail)}</td></tr>
+              <tr><td style="padding:8px 0;font-size:13px;">Şifre</td><td style="padding:8px 0;font-size:13px;text-align:right;color:#a78bfa;">Kurulumda belirlediğiniz şifre</td></tr>
+              <tr><td style="padding:8px 0;font-size:13px;">Durum</td><td style="padding:8px 0;font-size:13px;text-align:right;color:${pending ? '#fbbf24' : '#34d399'};">${pending ? 'Onay bekliyor' : 'Aktif'}</td></tr>
+            </table>
+          </div>
+          ${pending
+            ? `<p class="sub" style="color:#fbbf24;font-size:13px;">⏳ Onay tamamlanınca e-posta ile bilgilendirileceksiniz. Onaydan önce giriş "Kullanıcı pasif" uyarısı verir.</p>
+               <a href="/" class="btn btn-ghost" style="text-decoration:none;flex:none;display:inline-flex;">← Ana Sayfaya Dön</a>`
+            : `<a href="${data.loginUrl||DEMO_URL}" class="btn btn-primary" style="text-decoration:none;">🚀 Portala Giriş Yap</a>`}
+        </div>`;
+    }
+
+    // ── Başlat: token doğrula + ön-doldur ────────────────────────────────
+    (async function init(){
+      if(!token){ stepBody.innerHTML = errCard('Kurulum jetonu bulunamadı. Lütfen doğrulama adımından tekrar başlayın.'); return; }
+      try {
+        const res = await fetch('/api/onboard-context?token='+encodeURIComponent(token));
+        const data = await res.json();
+        if(data.alreadyProvisioned){
+          renderPendingCard(data.message || 'Demo kurulumunuz oluşturulmuş ve yönetici onayı bekliyor.');
+          return;
+        }
+        if(!data.ok){ stepBody.innerHTML = errCard(data.error || 'Oturum doğrulanamadı.'); return; }
+        const p = data.prefill || {};
+        state.adminFullName = `${p.first_name||''} ${p.last_name||''}`.trim();
+        state.adminEmail = (p.email||'').toLowerCase();
+        state.adminPhone = p.phone || '';
+        state.companyTitle = p.company || '';
+        state.companyCode = normCode(p.company || '');
+        state.tenantName = p.company || '';
+        state.tenantCode = normCode(p.company || '');
+        renderStepper(); go(1);
+      } catch {
+        stepBody.innerHTML = errCard('Sunucuya ulaşılamadı. Lütfen tekrar deneyin.');
+      }
+    })();
+
+    function errCard(text){
+      document.getElementById('stepper').classList.add('hidden');
+      return `<div class="center"><div class="big">⚠️</div><h2>Kurulum Başlatılamadı</h2><p class="sub">${esc(text)}</p><a href="/" class="btn btn-primary" style="text-decoration:none;">← Ana Sayfaya Dön</a></div>`;
+    }
+
+    function renderPendingCard(text){
+      document.getElementById('stepper').classList.add('hidden');
+      stepBody.innerHTML = `<div class="center"><div class="big">⏳</div><h2>Onay Bekleniyor</h2><p class="sub">${esc(text)} Onay tamamlandığında giriş yapabilirsiniz.</p><a href="/" class="btn btn-ghost" style="text-decoration:none;flex:none;display:inline-flex;">← Ana Sayfaya Dön</a></div>`;
+    }
+  </script>
+</body>
+</html>

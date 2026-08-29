@@ -697,7 +697,7 @@
         <div class="modal-logo-text">NCM<span>SOFT</span></div>
       </div>
       <div class="modal-title">Demo Erişimi Talep Et</div>
-      <div class="modal-sub">NCMSoft demo platformunu ücretsiz keşfetmek için bilgilerinizi girin. E-posta adresinize erişim bağlantısı gönderilecektir.</div>
+      <div class="modal-sub">NCMSoft demo platformunu ücretsiz keşfetmek için bilgilerinizi girin. E-posta adresinize 6 haneli doğrulama kodu gönderilecektir.</div>
 
       <div class="form-error" id="formError"></div>
 
@@ -727,7 +727,7 @@
           </div>
         </div>
         <button type="submit" class="btn-submit" id="submitBtn">
-          <span id="submitBtnText">Erişim Bağlantısı Gönder →</span>
+          <span id="submitBtnText">Doğrulama Kodu Gönder →</span>
         </button>
       </form>
       <p class="form-note">Bilgileriniz güvende. Spam göndermeyiz.</p>
@@ -737,7 +737,7 @@
     <div class="modal-success" id="modalSuccess">
       <span class="success-emoji">✉️</span>
       <div class="success-title">E-postanızı Kontrol Edin!</div>
-      <div class="success-desc" id="successDesc">Doğrulama bağlantısı e-posta adresinize gönderildi. Bağlantıya tıklayarak demo portala erişebilirsiniz.</div>
+      <div class="success-desc" id="successDesc">Doğrulama kodu e-posta adresinize gönderildi. Yönlendiriliyorsunuz...</div>
       <button class="success-back" onclick="resetModal()">← Geri Dön</button>
     </div>
   </div>
@@ -815,7 +815,7 @@ function resetModal() {
   document.getElementById('modalFormWrap').style.display = 'block';
   document.getElementById('formError').style.display = 'none';
   document.getElementById('submitBtn').disabled = false;
-  document.getElementById('submitBtnText').textContent = 'Erişim Bağlantısı Gönder →';
+  document.getElementById('submitBtnText').textContent = 'Doğrulama Kodu Gönder →';
 }
 
 async function submitRegistration(e) {
@@ -851,20 +851,31 @@ async function submitRegistration(e) {
     const result = await res.json();
 
     if (result.ok) {
+      if (result.alreadyProvisioned) {
+        document.getElementById('modalFormWrap').style.display = 'none';
+        document.getElementById('modalSuccess').style.display = 'block';
+        document.getElementById('successDesc').textContent =
+          result.message || 'Demo kurulumunuz oluşturulmuş ve yönetici onayı bekliyor.';
+        return;
+      }
+      // Kod doğrulama ekranına yönlendir.
+      const target = result.next || `/verify.html?email=${encodeURIComponent(data.email)}`;
       document.getElementById('modalFormWrap').style.display = 'none';
       document.getElementById('modalSuccess').style.display = 'block';
-      document.getElementById('successDesc').textContent = result.message;
+      document.getElementById('successDesc').textContent =
+        result.message || 'Doğrulama kodu e-posta adresinize gönderildi. Yönlendiriliyorsunuz...';
+      setTimeout(() => { location.href = target; }, 1200);
     } else {
       errEl.textContent = result.error || 'Bir hata oluştu. Lütfen tekrar deneyin.';
       errEl.style.display = 'block';
       btn.disabled = false;
-      txt.textContent = 'Erişim Bağlantısı Gönder →';
+      txt.textContent = 'Doğrulama Kodu Gönder →';
     }
   } catch {
     errEl.textContent = 'Bağlantı hatası. Lütfen tekrar deneyin.';
     errEl.style.display = 'block';
     btn.disabled = false;
-    txt.textContent = 'Erişim Bağlantısı Gönder →';
+    txt.textContent = 'Doğrulama Kodu Gönder →';
   }
 }
 
